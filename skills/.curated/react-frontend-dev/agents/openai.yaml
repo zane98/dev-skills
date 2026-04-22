@@ -1,0 +1,7 @@
+interface:
+  display_name: "React Frontend Dev"
+  short_description: "React 前端开发规范、真实链路优先与默认技术栈"
+  default_prompt: "Use $react-frontend-dev to build or update a React frontend with pnpm, Vite, Tailwind, TanStack Query, BrowserRouter, Zustand, and consistent structured data presentation patterns, prioritizing correct primary flows and switching formal routes to real integrations once accounts and keys are ready instead of leaving mock logic in place."
+
+policy:
+  allow_implicit_invocation: true
