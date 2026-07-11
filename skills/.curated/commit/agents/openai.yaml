@@ -1,7 +1,7 @@
 interface:
-  display_name: "Commit 与安全收口"
-  short_description: "提交成果并清理 AI Git 现场，保留本地构建与依赖"
-  default_prompt: "使用 $commit 提交当前成果，仅清理已确认无用途的 AI Git 现场，并保留 ignored 的构建产物、缓存、依赖和本地配置。"
+  display_name: "Commit、PR 与合并收口"
+  short_description: "提交、推送、创建 PR 并合并后安全清理现场"
+  default_prompt: "使用 $commit 提交并推送当前成果，创建 PR/MR 后强制触发 $merge-pr 完成合并，再安全收口 Git 现场。"
 
 policy:
   allow_implicit_invocation: true

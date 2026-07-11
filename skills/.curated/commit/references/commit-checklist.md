@@ -45,7 +45,18 @@ git -C <repo> status --short --ignored=matching
 
 提交当前任务后再开始收口，避免把交付内容当作残留清掉。
 
-## 4. 确定性删除
+## 4. 远端交付闸门
+
+- 当前分支不是目标分支，并且只包含当前任务交付；若提交前位于目标分支，先创建任务分支。
+- remote URL、托管平台、认证身份和 push 权限已确认；只用普通 push，并核对远端 head SHA。
+- 复用的开放 PR/MR 必须与当前仓库、head、base 和预期 SHA 匹配；否则创建新的请求。
+- PR/MR 标题、正文和验证信息足以评审，且没有夹带其他任务 commit。
+- PR/MR 创建或复用成功后，立即显式加载并执行 `$merge-pr` 的完整工作流，传入 URL、base、head 和预期 head SHA；不得先结束当前任务。
+- 由 `$merge-pr` 检查完整 diff、必需 CI/review、冲突、branch protection、merge queue 和仓库合并策略；只创建 PR/MR 或只返回链接不算交付完成。
+- 只有全部闸门通过才合并；调用默认 `$commit` 已授权本次合并，但不授权绕过平台规则。
+- 合并后确认 PR/MR 状态、目标分支和最终 merge SHA。失败时保留可恢复现场并报告准确停点，不直接推送目标分支。
+
+## 5. 确定性删除
 
 以下命令只用于已经分类为 `AI 残留` 的候选项。helper 的 inspect 输出包含 branch/stash SHA 和 worktree 状态指纹；每次删除都传回预期值，防止盘点后其他进程修改现场。
 
@@ -86,7 +97,7 @@ python3 scripts/git_cleanup.py delete-path <path> --repo <repo> --expect-fingerp
 
 helper 不创建 bundle、patch、recovery ref、archive 或 quarantine。
 
-## 5. 删除顺序与并发
+## 6. 删除顺序与并发
 
 以下顺序只处理已分类为 `AI 残留` 的候选项：
 
@@ -98,7 +109,7 @@ helper 不创建 bundle、patch、recovery ref、archive 或 quarantine。
 
 任何 SHA、HEAD 或状态指纹不匹配都表示现场已变化。重新 inspect、重新分类，然后继续；不要跳过 CAS 检查。
 
-## 6. 最终验收
+## 7. 最终验收
 
 ```bash
 python3 scripts/git_cleanup.py inspect --repo <repo>
@@ -108,4 +119,4 @@ git -C <repo> worktree list --porcelain
 git -C <repo> branch -vv
 ```
 
-验收标准：当前交付已提交且没有当前任务的 Git 残留；ignored 本地环境保持原样；保留的 AI 现场都有活跃任务；用户或归属不明现场保持原样并已报告；不存在本流程创建的归档或恢复副本。
+验收标准：默认模式下当前交付已通过 PR/MR 合并到目标分支，平台状态和最终 merge SHA 已确认；当前任务没有 Git 残留；ignored 本地环境保持原样；保留的 AI 现场都有活跃任务；用户或归属不明现场保持原样并已报告；不存在本流程创建的归档或恢复副本。仅提交模式或远端阻塞必须明确报告未完成项。

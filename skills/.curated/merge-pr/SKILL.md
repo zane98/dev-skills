@@ -56,7 +56,7 @@ description: 评审或合并已有 GitHub Pull Request、GitLab Merge Request。
 - 若使用替代 PR/MR，在正文记录实际纳入的原 source head SHA，替代请求重新执行全部 review/CI 闸门。合并前和关闭原请求前都重新检查原 head；只有它仍等于已纳入 SHA 时才关闭原请求。若它已前进，保留原请求处理新增 delta。
 - 本流程创建但因 head/base 漂移而废弃的替代请求、分支和 worktree，可以在确认未被引用且内容已被新现场取代后关闭/删除，并留下替代关系。
 
-完成或暂停前调用 `$commit` 默认收口；只把恢复该 PR/MR 必需的 AI 现场标记为活跃，用户或归属不明现场保持原样。
+完成或暂停前调用 `$commit` 的“远端已完成”模式，只做本地盘点和安全清理，不再创建或合并 PR/MR；只把恢复该 PR/MR 必需的 AI 现场标记为活跃，用户或归属不明现场保持原样。
 
 ## 最终回复
 
