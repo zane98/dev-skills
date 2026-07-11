@@ -42,6 +42,7 @@ description: 所有软件开发与开发文档变更的统一入口。用于实�
 | 前端页面、组件、请求、路由、状态、表单、权限、性能或可访问性 | `references/frontend-core.md` |
 | 视觉实现、Figma 映射或 design token | `references/frontend-design-token.md` |
 | React Web | `references/frontend-react.md` |
+| 微信小程序（无论原生、Taro 或 uni-app）的任何改动 | `references/frontend-wechat-miniprogram.md`，并组合所用框架 reference |
 | Taro 小程序 | `references/frontend-taro-miniprogram.md` |
 | uni-app 小程序 | `references/frontend-uniapp-miniprogram.md` |
 | 后端模块边界、分层、服务拆分或核心业务流程 | `references/backend-architecture.md` |
