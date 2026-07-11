@@ -1,0 +1,4 @@
+interface:
+  display_name: "统一开发"
+  short_description: "统一处理前端、后端与跨层契约开发，并按业务风险完成充分验证"
+  default_prompt: "使用 $development 统一处理当前开发任务，按改动范围读取匹配的前端、后端、跨层契约和语言 reference，保持兼容、同步必要文档并完成风险验证。"

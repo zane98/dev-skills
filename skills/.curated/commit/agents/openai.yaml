@@ -1,0 +1,7 @@
+interface:
+  display_name: "Commit 与安全收口"
+  short_description: "提交成果并清理 AI Git 现场，保留本地构建与依赖"
+  default_prompt: "使用 $commit 提交当前成果，仅清理已确认无用途的 AI Git 现场，并保留 ignored 的构建产物、缓存、依赖和本地配置。"
+
+policy:
+  allow_implicit_invocation: true

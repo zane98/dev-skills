@@ -1,0 +1,4 @@
+interface:
+  display_name: "阿里云部署"
+  short_description: "阿里云 ECS / OSS / RDS 容器部署、迁移、健康检查与回滚"
+  default_prompt: "使用 $aliyun-deploy 通过本地 Docker 构建、SSH 上传、远端 Compose、迁移、健康检查和回滚完成阿里云部署。"

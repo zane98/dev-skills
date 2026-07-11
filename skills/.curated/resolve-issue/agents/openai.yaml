@@ -1,0 +1,7 @@
+interface:
+  display_name: "处理 Issue"
+  short_description: "验证 Issue、实现修复，并按授权完成提交、PR 与收尾"
+  default_prompt: "使用 $resolve-issue 读取并验证指定 issue，创建独立分支解决问题，按请求边界提交、创建或合并 PR，并完成本流程现场收尾。"
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,7 @@
+interface:
+  display_name: "评审与合并 PR"
+  short_description: "评审 PR/MR，按授权解决冲突、合并并处理关联分支"
+  default_prompt: "使用 $merge-pr 评审指定 PR/MR；仅在我授权且合并闸门通过时处理冲突、合并和关联分支。"
+
+policy:
+  allow_implicit_invocation: true

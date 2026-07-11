@@ -1,0 +1,4 @@
+interface:
+  display_name: "开发计划"
+  short_description: "复杂需求可执行计划，覆盖依赖、证据验收、发布回滚与进度维护"
+  default_prompt: "使用 $development-plan 为当前复杂需求制定可跟踪、可验证的分层计划，明确边界假设、任务依赖、验收证据及按风险选择的发布回滚路径。"
