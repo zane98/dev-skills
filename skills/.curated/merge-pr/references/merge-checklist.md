@@ -4,14 +4,23 @@
 
 优先使用仓库已配置的托管平台 CLI/API。GitHub 常用 `gh`，GitLab 常用 `glab`；使用前检查登录态和当前仓库映射。
 
-需要获得：
+所有模式都需要获得：
 
 - PR/MR URL、状态、作者、来源仓库、base/head 分支和 SHA。
 - 标题、正文、关联 issue、labels、review、讨论和 requested changes。
-- 提交列表、文件列表、完整 diff、CI/checks 和 mergeability。
-- 仓库允许的合并方式、branch protection 和自动删除分支设置。
+- CI/checks、mergeability、仓库允许的合并方式、branch protection 和自动删除分支设置。
 
-只看网页摘要或 `--stat` 不算完成评审。
+PR 处理模式另外获得提交列表、文件列表和完整 diff。交付合并模式不读取完整 diff。
+
+PR 处理模式只看网页摘要或 `--stat` 不算完成评审。
+
+### 模式判定
+
+- 用户直接要求合并、处理、review、审核或检查指定 PR/MR：使用 PR 处理，即使 PR 作者是用户自己。
+- 当前 `$commit` 或 `$resolve-issue` 为刚创建并已验证的精确 head SHA 携带验证上下文接力：使用交付合并。
+- 已有 PR、跨任务恢复或缺少上层验证上下文：使用 PR 处理。
+
+交付合并始终跳过第 3 节和所有本地测试，但不能跳过第 5 节的平台闸门。不得根据 PR 作者身份切换模式。
 
 ## 2. 不可信代码隔离
 
@@ -25,6 +34,8 @@ fork 或来源不受信任的 PR/MR 代码不得直接在带宿主凭据的环�
 无法建立可信隔离时，只做静态评审并报告“未运行不可信代码”；不能为了得到测试结果暴露宿主环境。
 
 ## 3. 评审清单
+
+本节只用于 PR 处理。交付合并不执行本节；head/base 漂移或冲突解决不改变模式。
 
 - 需求：改动是否解决正文或关联 issue 描述的问题，是否夹带无关修改。
 - 正确性：正常路径、边界条件、失败路径、并发和幂等性是否合理。
@@ -42,7 +53,7 @@ fork 或来源不受信任的 PR/MR 代码不得直接在带宿主凭据的环�
 2. 保留用户现有工作区；在独立 branch/worktree 中处理。
 3. 根据权限选择从 PR head 合入 base，或从 base 合入 PR head 创建替代请求。
 4. 解决冲突后确认 `git diff --check` 通过，仓库中不存在冲突标记。
-5. 查看 merge commit 前后的 combined diff，运行相关测试。
+5. 冲突解决产生新内容后，PR 处理模式检查 delta、combined diff 影响并运行相关测试；交付合并模式只等待新 head 的平台检查。
 6. 推送前重新查询平台 head/base SHA；任一发生影响合并结果的变化时停止并重新处理。
 7. 推回原 head 后记录新的 head SHA，重新等待该 SHA 对应的 required checks 和 review。
 
@@ -53,9 +64,11 @@ fork 或来源不受信任的 PR/MR 代码不得直接在带宿主凭据的环�
 - 没有 unresolved conversation 或 requested changes。
 - 必需 CI 已成功且每个 required check 对应当前精确 head SHA；pending 时等待，失败时分析而不是绕过。
 - PR/MR 仍为 open，base/head SHA 与评审时一致。
-- 使用 expected head SHA 的平台原子合并条件；GitHub 可使用 GraphQL `expectedHeadOid` 或 REST merge `sha`，GitLab 使用支持 SHA 前置条件的 merge API。条件失败即重新读取和评审。
+- 使用 expected head SHA 的平台原子合并条件；GitHub 可使用 GraphQL `expectedHeadOid` 或 REST merge `sha`，GitLab 使用支持 SHA 前置条件的 merge API。条件失败即重新读取平台状态，不因此切换模式。
 - 合并方式符合仓库规范，commit message 不丢失 issue 关联。
 - 数据库迁移、发布顺序和回滚方案已确认。
+
+交付合并下，CI pending 时等待，失败时只报告或处理平台状态，不做代码评审或本地测试；需要修改代码时仍保持交付合并模式，修改后的结果由平台检查。
 
 ## 6. 替代请求一致性
 

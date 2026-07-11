@@ -1,11 +1,11 @@
 ---
 name: merge-pr
-description: 评审或合并已有 GitHub Pull Request、GitLab Merge Request。用于检查实现与 CI/review、处理冲突、按用户授权合并及清理关联分支；不用于从 issue 开始实现（用 resolve-issue）或仅提交本地改动（用 commit）。
+description: 评审或合并已有 GitHub Pull Request、GitLab Merge Request。用户直接要求“合并/处理这个 PR/MR”时使用 PR 处理模式，先检查代码，再处理冲突并合并；由 commit 或 resolve-issue 当前流程创建并已验证的 PR/MR 使用交付合并模式，不重复检查代码或运行本地测试，只等待平台闸门并合并。支持清理关联分支；不用于从 issue 开始实现（用 resolve-issue）或仅提交本地改动（用 commit）。
 ---
 
 # Merge PR
 
-把“能不能合”与“怎么合”分开处理：先证明改动合理，再选择平台合并或本地冲突集成。
+把“能不能合”与“怎么合”分开处理：PR 处理入口先检查改动，交付合并入口复用上层验证，然后选择平台合并或本地冲突集成。
 
 ## 边界
 
@@ -14,9 +14,16 @@ description: 评审或合并已有 GitHub Pull Request、GitLab Merge Request。
 - 本流程只清理自己创建的本地现场，以及与已合并 PR/MR 一一对应且可证明安全的远端分支。
 - 不绕过必需 review、CI、branch protection 或仓库合并策略。
 
+## 模式
+
+- **PR 处理**：用户直接要求“合并这个 PR/MR”“处理这个 PR/MR”或明确要求 review/审核/检查时使用，不因 PR 作者是用户自己而跳过。先完整检查代码，再处理冲突、平台闸门和合并。
+- **交付合并**：仅由当前 `$commit` 或 `$resolve-issue` 流程为其刚创建并已验证的精确 head SHA 显式触发。不得检查代码、读取完整 diff 或运行本地测试，只执行平台状态、CI/review、branch protection、merge queue、权限和原子合并闸门。
+
+只按入口选择模式，不按 PR 作者身份猜测。用户直接点名 PR 并要求合并或处理时始终使用 PR 处理；上层 `$commit` 或 `$resolve-issue` 在同一交付流程中携带验证上下文调用时使用交付合并。已有 PR、跨任务恢复或缺少上层验证上下文时使用 PR 处理。
+
 ## 合并闸门
 
-只有 checklist 的需求、评审、测试、当前 head SHA、CI/review、权限和仓库策略闸门全部通过，且用户已授权合并时才继续。阻塞问题先按严重级别和文件/行号报告；安全边界和平台保护规则不能绕过。
+PR 处理模式只有 checklist 的需求、评审、测试、当前 head SHA、CI/review、权限和仓库策略闸门全部通过才继续。交付合并模式不执行需求、代码或本地测试检查，只确认上层验证上下文、SHA 与远端闸门。默认 `$commit`、`$resolve-issue` 或用户直接要求合并已经授权对应模式下的合并；平台保护规则不能绕过。
 
 ## 工作流
 
@@ -24,23 +31,25 @@ description: 评审或合并已有 GitHub Pull Request、GitLab Merge Request。
 
 ### 1. 定位 PR/MR
 
-按 checklist 定位平台、项目、base/head、作者和最新 SHA，保护本地已有改动；不可信来源没有隔离环境时只做静态评审。
+按 checklist 定位平台、项目、base/head、作者和最新 SHA，保护本地已有改动。根据调用入口选择模式；用户直接请求始终选择 PR 处理，当前 `$commit` 或 `$resolve-issue` 携带验证上下文接力时选择交付合并。处理不可信来源且没有隔离环境时只做静态评审。
 
 ### 2. 完成评审
 
-检查完整 diff、需求、正确性、安全、数据、兼容、测试和运维风险；先输出 actionable findings，没有阻塞问题时明确给出可合并结论和剩余风险。
+PR 处理模式检查完整 diff、需求、正确性、安全、数据、兼容、测试和运维风险；先输出 actionable findings，没有阻塞问题时明确给出可合并结论和剩余风险。
+
+交付合并模式跳过本步骤，不读取完整 diff，也不运行任何本地测试。记录上层流程、验证上下文和 head/base SHA，直接进入合并路径。
 
 ### 3. 选择合并路径
 
-- **无冲突**：等待必需检查通过，按仓库规则并绑定预期 head SHA 合并；条件不满足时重新评审。
-- **有冲突且可更新原 head**：在隔离 worktree 中从最新 PR head 创建临时集成分支，把最新 base 合入该分支，按双方意图解决冲突并测试。只有实际 branch push 权限、保护规则和仓库政策均允许，且远端 head SHA 未变化时，才把冲突解决提交以普通 fast-forward push 推回原 head。
+- **无冲突**：等待必需检查通过，按仓库规则并绑定预期 head SHA 合并；条件不满足时重新读取平台状态。
+- **有冲突且可更新原 head**：在隔离 worktree 中从最新 PR head 创建临时集成分支，把最新 base 合入该分支并按双方意图解决冲突。PR 处理模式按评审流程验证；交付合并模式只等待新 head 的平台检查。只有实际 branch push 权限、保护规则和仓库政策均允许，且远端 head SHA 未变化时，才把冲突解决提交以普通 fast-forward push 推回原 head。
 - **有冲突但不能更新原 head**：从最新 base 创建自有集成分支，合入 PR head 并解决冲突，推送后创建替代 PR/MR，正文关联原请求和冲突处理。替代请求合并前不关闭原请求。
 
-默认用 merge 保留双方历史；只有仓库明确要求线性历史时才 rebase。禁止直接把未经平台检查的本地合并结果推到保护目标分支。base 在评审或解冲突期间前进时，重新检查 combined diff、mergeability 和相关测试，或进入仓库 merge queue；对数据迁移、安全边界等高风险改动，要求 merge queue 或 up-to-date checks。
+默认用 merge 保留双方历史；只有仓库明确要求线性历史时才 rebase。禁止直接把未经平台检查的本地合并结果推到保护目标分支。交付合并中 head/base 前进、combined diff 变化或产生新 head 时仍不审核代码，只更新平台状态并等待对应 SHA 的必需检查。对数据迁移、安全边界等高风险改动，要求 merge queue 或 up-to-date checks。
 
 ### 4. 冲突处理
 
-按 checklist 理解并解决每个冲突，验证 combined diff 和相关测试。产生新 head 后重新执行评审、CI 和 review 闸门；漂移或推送失败时重新基于最新状态处理，不升级为强推。
+按 checklist 理解并解决每个冲突。PR 处理模式验证冲突结果；交付合并模式不重新评审冲突结果或运行本地测试，只等待新 head 的平台 CI/review 闸门。漂移或推送失败时重新基于最新状态处理，不升级为强推。
 
 ### 5. 合并与验证
 
@@ -62,9 +71,10 @@ description: 评审或合并已有 GitHub Pull Request、GitLab Merge Request。
 
 必须包含：
 
-- PR/MR URL、base/head、评审结论和主要风险
+- PR/MR URL、base/head 和调用入口；PR 处理模式给出评审结论和主要风险，交付合并模式说明上层验证上下文
 - CI、review 与本地验证结果
 - 冲突文件、解决原则和冲突解决提交（如有）
 - 合并方式、最终 SHA 和平台合并状态
+- 使用的模式；交付合并时列出 head/base SHA、平台检查结果和跳过代码审核的上层流程依据
 - 关联远端分支的删除或保留结论与安全证据
 - `$commit` 返回的本地仓库收口结果

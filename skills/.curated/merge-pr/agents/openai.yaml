@@ -1,7 +1,7 @@
 interface:
   display_name: "评审与合并 PR"
-  short_description: "评审 PR/MR，按授权解决冲突、合并并处理关联分支"
-  default_prompt: "使用 $merge-pr 评审指定 PR/MR；仅在我授权且合并闸门通过时处理冲突、合并和关联分支。"
+  short_description: "直接处理 PR 时评审；开发流程接力时免复检合并"
+  default_prompt: "使用 $merge-pr 处理指定 PR/MR；我直接要求合并时先检查并处理冲突，来自 $commit 或 $resolve-issue 的交付接力则免复检合并。"
 
 policy:
   allow_implicit_invocation: true

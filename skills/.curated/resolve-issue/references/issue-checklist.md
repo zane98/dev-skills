@@ -86,7 +86,7 @@
 
 - 创建或复用 PR/MR 后已立即进入 `$merge-pr`，没有把 PR/MR URL 当作完成结果。
 - PR/MR 开放期间，每次 issue/PR 新评论、review、CI 结果、提交或 base/head 漂移后都重新读取权威状态；范围内新口径已实现并重新验证，可修复的冲突或失败未被当作停止理由。
-- PR/MR 已独立评审，必需 CI/review 通过。
+- 本流程创建并验证的 PR/MR 已按 `$merge-pr` 交付合并模式通过必需 CI/review，不重复代码评审；复用外部已有 PR/MR 时已按 PR 处理模式完成检查。
 - 最终结果已进入目标分支，记录 merge/squash commit SHA。
 - issue 已自动关闭；若未自动关闭，已留下提交/PR 与验证证据并主动关闭。
 - 关闭后重新读取 issue，确认最终状态为 `CLOSED` 且关闭原因正确；否则任务仍未完成。

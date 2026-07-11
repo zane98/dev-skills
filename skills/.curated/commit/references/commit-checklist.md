@@ -45,14 +45,23 @@ git -C <repo> status --short --ignored=matching
 
 提交当前任务后再开始收口，避免把交付内容当作残留清掉。
 
+记录交付合并上下文：
+
+- 仓库标识、目标分支和已验证 base SHA。
+- head 分支、提交后的精确 head SHA 和已评审 diff 范围。
+- 实际运行的测试命令、结果，以及明确未运行的检查。
+- 当前 `$commit` 流程已完成 diff、需求、正确性和风险检查的声明。
+
 ## 4. 远端交付闸门
 
 - 当前分支不是目标分支，并且只包含当前任务交付；若提交前位于目标分支，先创建任务分支。
 - remote URL、托管平台、认证身份和 push 权限已确认；只用普通 push，并核对远端 head SHA。
 - 复用的开放 PR/MR 必须与当前仓库、head、base 和预期 SHA 匹配；否则创建新的请求。
 - PR/MR 标题、正文和验证信息足以评审，且没有夹带其他任务 commit。
-- PR/MR 创建或复用成功后，立即显式加载并执行 `$merge-pr` 的完整工作流，传入 URL、base、head 和预期 head SHA；不得先结束当前任务。
-- 由 `$merge-pr` 检查完整 diff、必需 CI/review、冲突、branch protection、merge queue 和仓库合并策略；只创建 PR/MR 或只返回链接不算交付完成。
+- 所有默认 `$commit` 创建或复用的 PR/MR，都立即执行 `$merge-pr` 的“交付合并”模式，传入 URL 和交付合并上下文；不得先结束当前任务。
+- `$merge-pr` 不评审 diff、不运行本地测试，只核对凭证并检查必需 CI/review、冲突、branch protection、merge queue 和仓库合并策略。
+- head/base 漂移、冲突解决或平台重跑检查时，`$merge-pr` 仍按交付合并处理，不补做代码审核或本地测试。
+- 只创建 PR/MR 或只返回链接不算交付完成。
 - 只有全部闸门通过才合并；调用默认 `$commit` 已授权本次合并，但不授权绕过平台规则。
 - 合并后确认 PR/MR 状态、目标分支和最终 merge SHA。失败时保留可恢复现场并报告准确停点，不直接推送目标分支。
 
