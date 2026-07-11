@@ -1,6 +1,6 @@
 ---
 name: commit
-description: 提交、推送并通过 PR/MR 合并 AI 开发成果，然后收口 Git 现场。用于用户要求 commit、结束开发任务，或清理 AI 创建的 branch、worktree、stash 与未忽略临时文件；默认执行 commit、push、创建 PR/MR，并强制触发 merge-pr skill 完成评审、等待检查和合并到目标分支。明确要求 commit only 时仅提交；从 issue 开始交付使用 resolve-issue。
+description: 提交、推送并通过 PR/MR 合并 AI 开发成果，然后收口 Git 现场。用于用户要求 commit、结束开发任务，或清理 AI 创建的 branch、worktree、stash 与未忽略临时文件；所有默认交付都只在 commit 阶段检查一次成果，然后 commit、push、创建 PR/MR，并强制以交付合并模式触发 merge-pr skill 只等待平台闸门和执行合并。明确要求 commit only 时仅提交；从 issue 开始交付使用 resolve-issue。
 ---
 
 # Commit
@@ -35,10 +35,11 @@ description: 提交、推送并通过 PR/MR 合并 AI 开发成果，然后收�
 4. 使用 [git_cleanup.py](scripts/git_cleanup.py) 的 SHA/状态指纹参数执行删除；状态漂移时重新盘点。
 5. 只提交当前任务相关内容，不改写其他任务或用户的 index、worktree 和历史。
 6. 不输出 secret；疑似凭据只报告路径类别，未获明确授权不展示或移动。
-7. 默认不强推、不改写共享分支，也不直接把交付推到目标分支；在任务分支普通 push 后创建 PR/MR，并调用 `$merge-pr` 完成评审、检查、合并与远端 head 清理。
+7. 默认不强推、不改写共享分支，也不直接把交付推到目标分支；在任务分支普通 push 后创建 PR/MR，并调用 `$merge-pr` 的交付合并完成平台闸门、合并与远端 head 清理。
 8. 将 ignored 内容视为开发环境，不在 commit 收口中删除；只有用户明确点名路径并要求清理时，才单独处理。
 9. 用户调用默认 `$commit` 即授权本次任务的普通 push、创建 PR/MR，并在仓库闸门通过后合并；不代表授权绕过 review、CI、branch protection、merge queue 或强推。
-10. 创建或复用 PR/MR 后必须显式触发 `$merge-pr`；“已创建 PR/MR”不是默认模式的完成状态，不得只返回链接或把合并留给用户。
+10. 所有由默认 `$commit` 创建或复用的 PR/MR 都必须显式触发 `$merge-pr` 的“交付合并”模式；“已创建 PR/MR”不是完成状态，不得只返回链接或把合并留给用户。
+11. 代码评审和本地测试只由 `$commit` 执行一次；交付合并中的 `$merge-pr` 不做代码检查。平台 CI、review、branch protection 与原子合并仍必须执行，它们是远端状态和权限闸门。
 
 ## 工作流
 
@@ -50,13 +51,15 @@ description: 提交、推送并通过 PR/MR 合并 AI 开发成果，然后收�
 
 检查当前任务 diff、secret、大文件和提交边界，运行匹配风险的测试。同文件混合时只 stage 当前任务 hunk；无法确认归属的 hunk 不提交、不丢弃。复查 staged diff 后提交当前交付。没有可提交改动时，先判断当前任务 commit 是否已经存在，禁止制造空提交。
 
+提交后记录交付合并上下文：仓库、目标分支、已验证 base SHA、head 分支、精确 head SHA、已评审 diff 范围，以及实际运行的测试和结果。
+
 ### 2. 远端交付
 
 确认 remote、认证和任务分支所有权后，以普通 push 发布当前任务分支并绑定预期 head SHA；禁止强推。复用 head/base/SHA 匹配的现有开放 PR/MR，否则创建新的 PR/MR，标题和正文说明改动与验证结果。
 
-PR/MR 创建或复用成功后，立即显式加载并执行 `$merge-pr` 的完整工作流，把 PR/MR URL、base、head 和预期 head SHA 作为接力上下文传入。该接力是默认模式的强制步骤，必须在当前任务内继续执行，不能停在 PR/MR 创建状态。
+PR/MR 创建或复用成功后，立即显式加载并执行 `$merge-pr` 的“交付合并”模式，传入 PR/MR URL 和交付合并上下文。所有默认 `$commit` 交付一律使用该模式，必须在当前任务内继续执行，不能停在 PR/MR 创建状态。
 
-由 `$merge-pr` 评审该 PR/MR，等待必需 CI、review、merge queue 和平台策略全部通过，再按仓库规定方式合并到目标分支。head/base 漂移、冲突或检查失败时持续执行 `$merge-pr` 的处理流程，直到合并成功或出现无法自行解除的真实阻塞。缺少 skill、remote、认证、权限或托管平台能力时保留已完成成果，明确报告阻塞与恢复步骤；不得假装已触发、把合并留给用户或退化为直接推送目标分支。
+由 `$merge-pr` 按“交付合并”模式只核对交付上下文与 head/base SHA，等待必需 CI、review、merge queue 和平台策略，再按仓库规定方式合并；不得重新评审代码、读取完整 diff 或运行本地测试。head/base 漂移、冲突解决产生新 head 或平台重跑检查时，继续只处理平台状态和合并，不把流程切换为 PR 处理模式。缺少 skill、remote、认证、权限或托管平台能力时保留已完成成果，明确报告阻塞与恢复步骤；不得假装已触发、把合并留给用户或退化为直接推送目标分支。
 
 ### 3. 全仓盘点
 

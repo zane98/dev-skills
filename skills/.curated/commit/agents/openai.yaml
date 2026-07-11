@@ -1,7 +1,7 @@
 interface:
   display_name: "Commit、PR 与合并收口"
-  short_description: "提交、推送、创建 PR 并合并后安全清理现场"
-  default_prompt: "使用 $commit 提交并推送当前成果，创建 PR/MR 后强制触发 $merge-pr 完成合并，再安全收口 Git 现场。"
+  short_description: "检查一次成果，提交 PR 后免复检合并并安全收口"
+  default_prompt: "使用 $commit 检查并提交当前成果，创建 PR/MR 后以交付合并模式触发 $merge-pr 免复检完成合并，再安全收口 Git 现场。"
 
 policy:
   allow_implicit_invocation: true
