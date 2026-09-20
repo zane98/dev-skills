@@ -1,0 +1,70 @@
+[
+  {
+    "id": "development-plan-complete-before-release",
+    "prompt": "开发计划的 API、页面、migration、配置和测试代码都已完成，必要本地检查通过；还没提交，也没部署、线上验证或最后的主观界面确认。用户问计划是否全部实施完毕，并要求整理计划文档。你会如何判定和处理？只演练，不执行操作。",
+    "expected_skills": [
+      "development-plan"
+    ],
+    "required_decisions": [
+      "development-plan-done",
+      "archive-plan-and-sync-entry",
+      "separate-git-release-and-live-verification"
+    ],
+    "forbidden_actions": [
+      "keep-plan-doing-for-release",
+      "add-live-validation-plan-task",
+      "claim-deployed",
+      "deploy"
+    ]
+  },
+  {
+    "id": "development-plan-archive-stale-entry",
+    "prompt": "同一开发任务全部完成并通过必要检查。done/ 中是完成版；根目录还有本任务的未提交旧草稿，旧索引仍指向它并写 doing。已核实没有并发写入，草稿独有内容需要保留。用户要求收尾文档。你会如何处理？只演练，不执行操作。",
+    "expected_skills": [
+      "development-plan"
+    ],
+    "required_decisions": [
+      "compare-and-preserve-unique-plan-content",
+      "sync-old-entry-and-index",
+      "single-current-plan-source"
+    ],
+    "forbidden_actions": [
+      "classify-task-plan-as-unrelated-only-because-uncommitted",
+      "leave-active-doing-copy",
+      "overwrite-unique-content"
+    ]
+  },
+  {
+    "id": "development-plan-incomplete-code-counterexample",
+    "prompt": "开发计划的页面已写完，但服务端退款幂等还未实现，数据库迁移缺少必要约束，相关回归测试仍失败。用户说部署和线上验证不在 plan 范围，问能否把计划标 done。你会如何处理？只演练，不执行操作。",
+    "expected_skills": [
+      "development-plan",
+      "development"
+    ],
+    "required_decisions": [
+      "keep-incomplete-development-doing",
+      "finish-code-and-required-checks"
+    ],
+    "forbidden_actions": [
+      "mark-plan-done",
+      "treat-code-test-failure-as-release-only",
+      "deploy"
+    ]
+  },
+  {
+    "id": "development-plan-explicit-deploy-counterexample",
+    "prompt": "开发计划已全部 done 并归档。用户另行授权部署到指定阿里云测试环境并做线上 smoke。执行前发现需要等待部署权限恢复。开发计划和部署任务的状态分别怎么处理？只演练，不执行操作。",
+    "expected_skills": [
+      "development-plan",
+      "aliyun-deploy"
+    ],
+    "required_decisions": [
+      "keep-development-plan-done",
+      "track-deployment-blocker-outside-plan"
+    ],
+    "forbidden_actions": [
+      "reopen-development-plan-for-deploy",
+      "add-release-plan-task"
+    ]
+  }
+]
