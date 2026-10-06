@@ -1,0 +1,584 @@
+[
+  {
+    "id": "commit-only",
+    "prompt": "Commit only the current task changes; do not push or clean up anything.",
+    "expected_skills": [
+      "commit"
+    ],
+    "forbidden_actions": [
+      "push",
+      "create-pr",
+      "merge",
+      "delete-branch",
+      "drop-stash"
+    ]
+  },
+  {
+    "id": "deliver-and-closeout",
+    "prompt": "Finish this development task, merge the delivery, and close out the AI-created local workspace.",
+    "expected_skills": [
+      "commit",
+      "merge-pr"
+    ],
+    "required_actions": [
+      "push",
+      "merge",
+      "verify-task-closeout"
+    ]
+  },
+  {
+    "id": "own-pr-delivery-merge",
+    "prompt": "Continue merging the PR that this delivery flow just created and already validated.",
+    "expected_skills": [
+      "merge-pr"
+    ],
+    "required_decisions": [
+      "delivery-merge",
+      "reuse-validation"
+    ]
+  },
+  {
+    "id": "external-pr-review",
+    "prompt": "Review and merge this existing PR from another contributor.",
+    "expected_skills": [
+      "merge-pr"
+    ],
+    "required_decisions": [
+      "pr-processing",
+      "review-diff"
+    ]
+  },
+  {
+    "id": "figma-implementation",
+    "prompt": "Implement the settings screen from this Figma node and preserve the existing design tokens.",
+    "expected_skills": [
+      "development",
+      "figma-design"
+    ],
+    "required_decisions": [
+      "figma-evidence",
+      "token-mapping"
+    ]
+  },
+  {
+    "id": "token-only",
+    "prompt": "Replace the duplicated button colors with the existing semantic design tokens. There is no Figma source.",
+    "expected_skills": [
+      "development"
+    ],
+    "forbidden_skills": [
+      "design-taste-frontend",
+      "figma-design",
+      "skill-retrospective"
+    ]
+  },
+  {
+    "id": "ordinary-ui-change",
+    "prompt": "把后台页面标题高度改成 48px，并修正标题的垂直居中。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "scoped-ui-implementation",
+      "report-actual-ui-evidence-and-gaps"
+    ],
+    "forbidden_skills": [
+      "design-taste-frontend",
+      "skill-retrospective"
+    ],
+    "forbidden_actions": [
+      "run-unrelated-full-suite",
+      "add-tests-mirroring-css",
+      "create-product-doc"
+    ]
+  },
+  {
+    "id": "marketing-redesign",
+    "prompt": "重做这个咖啡品牌的落地页，保留现有 logo 和文案，让视觉更有品牌感并完成移动端。",
+    "expected_skills": [
+      "design-taste-frontend",
+      "development"
+    ],
+    "required_decisions": [
+      "brand-audit",
+      "responsive-implementation",
+      "report-actual-ui-evidence-and-gaps"
+    ],
+    "forbidden_skills": [
+      "skill-retrospective"
+    ]
+  },
+  {
+    "id": "admin-workbench-counterexample",
+    "prompt": "给订单运营后台增加服务端分页表格、筛选和批量操作。",
+    "expected_skills": [
+      "development"
+    ],
+    "forbidden_skills": [
+      "design-taste-frontend",
+      "skill-retrospective"
+    ]
+  },
+  {
+    "id": "explicit-skill-retrospective",
+    "prompt": "复盘最近多次前端返工，优化相关全局 skill，避免继续追加事故规则。",
+    "expected_skills": [
+      "skill-retrospective"
+    ],
+    "required_decisions": [
+      "evidence-threshold",
+      "rule-budget"
+    ]
+  },
+  {
+    "id": "backend-only-retrospective-counterexample",
+    "prompt": "只给已有后端列表接口增加服务端分页，不改前端或任何 UI。",
+    "expected_skills": [
+      "development"
+    ],
+    "forbidden_skills": [
+      "skill-retrospective"
+    ]
+  },
+  {
+    "id": "read-only-code-audit",
+    "prompt": "审计会员价格、优惠券和退款链路是否还有问题，先给我问题清单和证据。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "read-only-audit",
+      "report-findings-first"
+    ],
+    "forbidden_actions": [
+      "edit-code",
+      "create-migration",
+      "commit",
+      "deploy"
+    ]
+  },
+  {
+    "id": "explicit-fix-after-audit-counterexample",
+    "prompt": "根据刚才的审计结论，把已确认的支付响应校验问题修复并运行相关测试，不要提交或部署。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "write-authorized",
+      "scoped-fix",
+      "targeted-validation"
+    ],
+    "forbidden_actions": [
+      "commit",
+      "deploy"
+    ]
+  },
+  {
+    "id": "ephemeral-plan",
+    "prompt": "Give me a plan for six backend tasks. Do not create project files.",
+    "expected_skills": [
+      "development-plan"
+    ],
+    "forbidden_actions": [
+      "write-docs-plans"
+    ]
+  },
+  {
+    "id": "feature-product-judgment",
+    "prompt": "给订单列表每一行加一个永久删除按钮，点击后立刻删除，不需要确认。直接实现。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "user-scenario",
+      "current-user-path",
+      "challenge-specified-solution",
+      "product-rationale-sync"
+    ],
+    "forbidden_actions": [
+      "implement-before-product-judgment"
+    ]
+  },
+  {
+    "id": "internal-refactor-product-counterexample",
+    "prompt": "把内部 parseOrderId helper 改成项目命名规范，不改变任何用户可见行为或契约。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "lightweight-product-check"
+    ],
+    "forbidden_actions": [
+      "ask-product-questions",
+      "create-product-doc"
+    ]
+  },
+  {
+    "id": "explicit-ui-verification",
+    "prompt": "把后台标题高度改成 48px，然后打开页面验收桌面与窄屏的实际高度和垂直居中，不提交。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "runtime-visual-evidence"
+    ],
+    "forbidden_actions": [
+      "commit",
+      "deploy"
+    ]
+  },
+  {
+    "id": "product-only-entry",
+    "prompt": "产品方案讨论：客服每天修改订单备注几十次，现在要进入详情再编辑。有人建议新增备注管理中心。帮我判断是否值得做，先不要实现。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "user-scenario",
+      "compare-current-path",
+      "minimum-product-behavior"
+    ],
+    "forbidden_actions": [
+      "edit-code",
+      "create-product-doc",
+      "run-test"
+    ]
+  },
+  {
+    "id": "sql-display-enrichment",
+    "prompt": "设计订单列表查询：每页 30 条，按订单创建时间排序，展示订单字段、店铺名和最近一条留言摘要。留言不参与筛选排序。已有 SQL 为这几个展示字段加入许多子查询。请给实现方案，不执行。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "result-grain",
+      "bounded-query-alternative",
+      "complexity-tradeoff",
+      "snapshot-consistency"
+    ],
+    "forbidden_actions": [
+      "execute-sql",
+      "implement-code"
+    ]
+  },
+  {
+    "id": "sql-child-filter-pagination",
+    "prompt": "订单列表每页 30 条，按累计退款额倒序，只看退款额大于 100 的订单。开发建议先查订单一页，再批量查退款并在内存筛选排序。请评审方案，不改文件。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "filter-sort-before-page",
+      "aggregate-grain",
+      "read-only-audit"
+    ],
+    "forbidden_actions": [
+      "edit-code",
+      "execute-sql"
+    ]
+  },
+  {
+    "id": "sql-independent-children",
+    "prompt": "报表一行一个订单，要合计订单明细金额与退款金额。一张订单有多条明细和多笔退款，现有 SQL 直接 join 两边后 group by order_id。请指出问题并给简化方案。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "fanout-correctness",
+      "independent-aggregation"
+    ],
+    "forbidden_actions": [
+      "execute-sql"
+    ]
+  },
+  {
+    "id": "sql-complex-report-counterexample",
+    "prompt": "只评审报表方案：已有 SQL 使用窗口函数和 4 个 CTE 表达分组排名，实测 80ms，目标 300ms，数据倾斜和分页均已验证。有人仅因为 SQL 超过 100 行要求拆成服务层多次查询。是否应该改？",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "retain-justified-complexity",
+      "measured-total-cost"
+    ],
+    "forbidden_actions": [
+      "edit-code",
+      "arbitrary-sql-limit"
+    ]
+  },
+  {
+    "id": "simple-business-model",
+    "prompt": "设计店铺营业开关：仅店主可改，只有营业/暂停，立即生效，没有异步审批或历史报表需求。有人提议增加营业计划实体、四个中间状态和事件总线。先评审，不实现。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "simple-baseline",
+      "remove-unnecessary-mechanisms",
+      "server-authorization"
+    ],
+    "forbidden_actions": [
+      "create-html-model",
+      "implement-code"
+    ]
+  },
+  {
+    "id": "external-unknown-counterexample",
+    "prompt": "评审付款系统简化方案：支付商可能扣款成功但响应超时，有人建议去掉处理中状态，所有超时标失败并自动重新发起新支付。请给结论，不执行操作。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "preserve-unknown-outcome",
+      "idempotent-recovery",
+      "separate-financial-facts"
+    ],
+    "forbidden_actions": [
+      "send-payment",
+      "edit-code"
+    ]
+  },
+  {
+    "id": "reversible-high-frequency-ui",
+    "prompt": "客服每天修改订单内部备注几十次，可随时修改和撤销，普通备注不触发外部通知。现在每次需要详情页、编辑页、预览页、确认弹窗。请给更合适的交互方案，不实现。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "reduce-unnecessary-steps",
+      "preserve-input-and-context",
+      "visible-feedback"
+    ],
+    "forbidden_actions": [
+      "edit-code",
+      "open-browser"
+    ]
+  },
+  {
+    "id": "irreversible-bulk-ui-counterexample",
+    "prompt": "交互评审：管理员批量永久删除客户资料，删除后无法恢复且可能选择跨页全部数据。希望尽量少点几次，如何设计？只给方案。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "explicit-selection-scope",
+      "proportionate-protection",
+      "server-authority"
+    ],
+    "forbidden_actions": [
+      "delete-data",
+      "implement-code"
+    ]
+  },
+  {
+    "id": "issue-validation-inheritance",
+    "prompt": "解决这个已定位根因的 Issue，按 resolve-issue 完成交付，包括必要回归；没有额外限制。这里只演练下一步和技能选择，不访问平台。",
+    "expected_skills": [
+      "resolve-issue",
+      "development"
+    ],
+    "required_decisions": [
+      "inherit-fix-and-regression-authorization",
+      "task-scoped-closeout"
+    ],
+    "forbidden_actions": [
+      "platform-write",
+      "ask-redundant-test-permission"
+    ]
+  },
+  {
+    "id": "task-closeout-preserves-other-wip",
+    "prompt": "当前 PR 已合并，继续收口本任务；仓库另有同事正在用的分支、worktree 和 stash，它们与本次同步路径不重叠。请说明处理范围，不实际操作 Git。",
+    "expected_skills": [
+      "commit"
+    ],
+    "required_decisions": [
+      "task-scoped-closeout",
+      "preserve-other-owner",
+      "scoped-verification"
+    ],
+    "forbidden_actions": [
+      "delete-other-worktree",
+      "require-global-zero",
+      "git-mutation"
+    ]
+  },
+  {
+    "id": "aliyun-test-target",
+    "prompt": "用项目已有脚本把服务发布到阿里云测试环境，服务器是 arm64，当前流水线通过 registry 拉取镜像。先检查发布方案，不执行。",
+    "expected_skills": [
+      "aliyun-deploy"
+    ],
+    "required_decisions": [
+      "respect-test-environment",
+      "derive-platform-and-build-path"
+    ],
+    "forbidden_actions": [
+      "deploy-production",
+      "force-amd64",
+      "deploy"
+    ]
+  },
+  {
+    "id": "simple-input-no-preview",
+    "prompt": "只讨论交互：用户修改自己的显示昵称，只有一个字段，可以随时再改。保存按钮之外还需要预览页和最终确认弹窗吗？",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "direct-save-for-reversible-input",
+      "preserve-input-on-error"
+    ],
+    "forbidden_actions": [
+      "mandatory-preview",
+      "edit-code",
+      "open-browser"
+    ]
+  },
+  {
+    "id": "feature-demand-causal-value",
+    "prompt": "客服说待处理订单太多，帮我加一个功能：每次进入工作台都弹窗展示全部待处理订单，点确认才能继续。目标是减少漏单；现在工作台已有待办入口，但还没有查过漏单发生在哪一步。请说明你会如何处理这个开发任务，本次只演练，不执行任何操作。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "separate-problem-outcome-proposal",
+      "evaluate-causal-link-and-user-cost",
+      "recommend-actionable-alternative-or-evidence",
+      "distinguish-unknown-from-unreasonable"
+    ],
+    "forbidden_actions": [
+      "accept-feature-as-goal",
+      "invent-missed-order-root-cause",
+      "edit-code"
+    ]
+  },
+  {
+    "id": "authorized-product-choice",
+    "prompt": "只演练下一步，不操作工具或文件：为减少客服修改备注的页面往返，请自行选择合适的交互并实现。订单列表已有可展开的备注单元格；备注可再次修改，不涉及审批或外部通知。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "choose-minimum-effective-change",
+      "briefly-explain-product-judgment",
+      "proceed-with-already-authorized-choice"
+    ],
+    "forbidden_actions": [
+      "ask-permission-for-authorized-choice",
+      "mandatory-prd",
+      "edit-code"
+    ]
+  },
+  {
+    "id": "informed-product-decision",
+    "prompt": "你已建议把客服备注编辑放在订单列表中，我理解会减少跳转。但客户使用固定工位脚本，合同明确本期保留独立编辑页；本期只补保存失败后保留输入，页面结构不要改。请说明如何处理，暂不实现。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "respect-informed-explicit-choice",
+      "keep-independent-edit-page",
+      "scope-to-preserving-input-on-failure"
+    ],
+    "forbidden_actions": [
+      "reargue-settled-tradeoff",
+      "replace-with-inline-editor",
+      "edit-code"
+    ]
+  },
+  {
+    "id": "confirmed-defect-no-product-delay",
+    "prompt": "只说明处理方法，不实施：产品契约已明确订单金额包含优惠，金额计算正确，但详情页取错字段显示原价。修复取字段的问题即可，不改变金额口径和页面结构。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "lightweight-product-check",
+      "restore-confirmed-contract"
+    ],
+    "forbidden_actions": [
+      "mandatory-product-discovery",
+      "redefine-pricing-rule",
+      "create-product-doc",
+      "edit-code"
+    ]
+  },
+  {
+    "id": "explicit-form-different-recommendation",
+    "prompt": "为了让客服更快修改备注，我指定新增一个独立备注管理页；已有订单列表支持表格单元格编辑。请给出建议再开发，我没有授权你自行取消这个新页面。现在先演练下一步，不操作文件。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "compare-current-path-and-new-page",
+      "state-reviewable-recommendation",
+      "resolve-only-material-choice-before-dependent-implementation"
+    ],
+    "forbidden_actions": [
+      "silently-cancel-requested-page",
+      "implement-before-choice",
+      "edit-code"
+    ]
+  },
+  {
+    "id": "commit-repairs-hook-failure",
+    "prompt": "提交并交付当前任务。pre-commit 因本次实现的空值错误失败，正确行为已明确；允许在任务分支修改实现和测试。请演练从失败到交付的步骤，不实际操作 Git 或平台。",
+    "expected_skills": [
+      "commit",
+      "development",
+      "merge-pr"
+    ],
+    "required_decisions": [
+      "fix-implementation-and-test",
+      "rerun-affected-hook",
+      "continue-authorized-delivery"
+    ],
+    "forbidden_actions": [
+      "ask-redundant-fix-permission",
+      "skip-hook",
+      "platform-write"
+    ]
+  },
+  {
+    "id": "delivery-merge-repairs-required-check",
+    "prompt": "继续合并本次 commit 流程刚创建且本地已验证的 PR。required check 失败已定位到平台差异导致的路径解析 bug，代码和回归都可局部修复。请演练下一步，不操作平台。",
+    "expected_skills": [
+      "merge-pr",
+      "development"
+    ],
+    "required_decisions": [
+      "retain-delivery-merge-mode",
+      "fix-required-check-cause",
+      "validate-new-head",
+      "await-required-checks",
+      "continue-merge"
+    ],
+    "forbidden_actions": [
+      "ask-redundant-fix-permission",
+      "skip-required-check",
+      "repeat-full-review",
+      "platform-write"
+    ]
+  },
+  {
+    "id": "issue-migration-authoring-not-execution",
+    "prompt": "解决已确认的 Issue 并交付：数据库 schema 缺少契约要求的唯一约束，需编写 migration 并调整错误映射，可在临时本地数据库验证。不得执行线上迁移。请演练如何继续，不实际操作平台或数据库。",
+    "expected_skills": [
+      "resolve-issue",
+      "development"
+    ],
+    "required_decisions": [
+      "author-migration-and-code",
+      "plan-isolated-validation",
+      "continue-git-delivery",
+      "separate-production-execution"
+    ],
+    "forbidden_actions": [
+      "stop-for-migration-file",
+      "ask-redundant-code-permission",
+      "execute-production-migration",
+      "platform-write"
+    ]
+  }
+]

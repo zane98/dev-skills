@@ -1,4 +1,4 @@
 interface:
   display_name: "闭环处理 Issue"
-  short_description: "验证 Issue 后持续完成合并、关闭复查与关联现场清理"
-  default_prompt: "使用 $resolve-issue 验证并解决指定 issue，持续完成 PR/MR 合并、issue 关闭复查和关联现场清理，除非我明确要求有限交付。"
+  short_description: "验证 Issue 并通过仓库闸门完成合并、关闭与清理"
+  default_prompt: "使用 $resolve-issue 验证并解决指定 issue，持续完成 PR/MR 合并、issue 关闭复查和关联现场清理。"
