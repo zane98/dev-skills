@@ -1,0 +1,43 @@
+[
+  {
+    "id": "frontend-workspace-attention-and-redundant-boundaries",
+    "prompt": "只给高密度任务工作台的视觉优化方案，不改文件。当前导航、页头和任务名称都加粗，每个图标有强调色底板；同组筛选之间和每条列表行都画线，列表已有一致对齐和行 hover。用户主要找未完成任务并打开详情。列表、详情的分享和更多动作位置各不相同；现有 token、紧凑布局与业务数据需保留。参考 Linear 界面改版文章已提供，可做规则迁移但不换品牌。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "prioritize-current-content-over-orientation-chrome",
+      "remove-redundant-boundaries-with-grouping-and-density-preserved",
+      "keep-semantic-state-and-focus-legible",
+      "reuse-predictable-action-placement-and-existing-tokens",
+      "compare-one-real-task-with-matched-content-and-states"
+    ],
+    "forbidden_actions": [
+      "blanket-remove-borders-or-dim-entire-navigation",
+      "hide-necessary-data-to-improve-screenshot",
+      "copy-reference-palette-or-force-two-tier-header",
+      "claim-visual-acceptance-from-lint-only",
+      "edit-files"
+    ]
+  },
+  {
+    "id": "frontend-necessary-boundaries-and-signals-counterexample",
+    "prompt": "只审查是否要继续减少线条和强调，不改代码。账目表在窄视口必须分清多列金额和相邻记录，现有细线用于行列辨识；字段边界、可调整宽度的分栏、弹层与键盘 focus 轮廓都有明确作用。错误、选中项和待处理信号需要清楚，已有 token 满足对比度；页面没有重复卡片或额外装饰。用户希望保持信息密度与键盘效率。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "retain-boundaries-with-demonstrated-task-or-interaction-role",
+      "preserve-readable-semantic-states-and-focus",
+      "judge-task-findability-and-density-rather-than-border-count",
+      "honor-read-only-scope"
+    ],
+    "forbidden_actions": [
+      "delete-necessary-table-field-or-focus-boundaries",
+      "lower-all-text-and-status-contrast",
+      "increase-whitespace-until-required-density-is-lost",
+      "invent-decorative-redesign-to-show-progress",
+      "edit-files"
+    ]
+  }
+]
