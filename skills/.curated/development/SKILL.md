@@ -41,6 +41,7 @@ description: 所有软件开发与开发文档变更的统一入口。用于实�
 | 跨前后端字段、mock 转真实接口、提交后查询回显、多消费者链路或完成度判断 | `references/cross-layer-contract.md`，并组合命中的前端、API 和数据 reference |
 | 前端页面、组件、请求、路由、状态、表单、权限、性能或可访问性 | `references/frontend-core.md` |
 | 视觉实现、Figma 映射或 design token | `references/frontend-design-token.md` |
+| UI 质感受质疑、参考学习或视觉改进 | [审美校准与验收](references/frontend-ui-quality.md)；与 token 合规分别判断，先验证一个真实页面 |
 | React Web | `references/frontend-react.md` |
 | 微信小程序（无论原生、Taro 或 uni-app）的任何改动 | `references/frontend-wechat-miniprogram.md`，并组合所用框架 reference |
 | Taro 小程序 | `references/frontend-taro-miniprogram.md` |
