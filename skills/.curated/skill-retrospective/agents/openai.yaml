@@ -1,4 +1,4 @@
 interface:
   display_name: "Skill Retrospective"
-  short_description: "复盘重复失败并最小更新规则，维护开发 Skills 协同"
-  default_prompt: "使用 $skill-retrospective 复盘这次重复失败，判断应改哪个规则并在有证据时完成最小更新与验证。"
+  short_description: "复盘重复失败并半自动评测 Skills，最小更新规则"
+  default_prompt: "使用 $skill-retrospective 复盘重复失败，运行半自动评测并在有证据和授权时完成最小更新。"

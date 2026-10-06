@@ -1,131 +1,140 @@
 # Commit Checklist
 
-## 1. 获取真实状态
+清理范围、授权和完成条件以 [SKILL.md](../SKILL.md) 为准。本文件只提供执行检查与工具契约。
 
-从 skill 目录运行：
+## 1. 平台与现场
+
+根据 `git remote -v` / `git remote get-url` 识别平台和真实合并目标，再检查对应 CLI：
 
 ```bash
-python3 scripts/git_cleanup.py inspect --repo <repo>
+# GitHub
+command -v gh
+gh auth status
+gh repo view --json nameWithOwner,defaultBranchRef
+
+# GitLab
+command -v glab
+glab auth status
+glab repo view
 ```
 
-另外检查：
+普通 ref 传输使用 `git`，平台操作使用对应 CLI/API。CLI、权限和认证异常按主文件处理，不能擅自打开网页认证。
+
+从 skill 目录检查全部现场，并按本任务归属分类：
 
 ```bash
-git -C <repo> remote -v
+python3 scripts/git_cleanup.py inspect --repo <repo> --target <verified-target-ref-or-sha>
 git -C <repo> status --short --branch
 git -C <repo> diff
 git -C <repo> diff --cached
 git -C <repo> diff --check
 git -C <repo> ls-files --others --exclude-standard
-git -C <repo> status --short --ignored=matching
 ```
 
-`--ignored` 输出仅用于了解本地开发环境，不是删除清单。读取托管平台的开放 issue/PR/MR，并确认是否有 live agent、自动化或人工流程正在使用某个现场。不要把 feature upstream 当作目标分支。
+`inspect` 返回各 worktree 的状态指纹、分支 SHA、stash SHA 和临时路径候选。`task_path_candidates` 包含 `.codex/tmp/*`、`.claude/worktrees/*` 及系统临时目录中的 `<repo>-*` / `codex-<repo>-*`。候选只是发现线索：结合本任务操作记录、开放 issue/PR/MR、用户指令和 live owner 判断所有权。普通 ignored 环境及其他任务现场保留；不能依据名称删除，也不能将它们自动加入任务清单。
 
-## 2. 分类标准
+`--target` 将目标锁定为输出的 `target_sha`，为本地 branch 和各 worktree HEAD 返回 `head_in_target` 与 `unique_commits`（目标不可达的提交 SHA）；另报告 `dirty` 与 `has_ignored`。目标不存在时报错；缺失的已注册 worktree 报告状态未知。helper 不 fetch、不查询平台、不删除；省略 `--target` 时仍可做原始盘点，不能据此回答合并状态。
 
-| 结论 | 必需证据 | 动作 |
+报告覆盖全仓，清理范围仍按下表：
+
+- 使用权威目标的已验证 SHA；仅有旧本地 ref 时注明新鲜度未核实。对所有额外本地分支/worktree核对目标可达性；以 `git ls-remote --heads <remote>` 读取同仓库真实远端开发分支，不能把陈旧 remote-tracking ref 当作仍存在的远端分支。远端 SHA、本地对象、PR/MR 或 owner 无法核实时，报告未知及原因。
+- `head_in_target=true` 只证明当前已提交 HEAD 的历史已纳入该目标；`false` 或存在 `unique_commits` 不证明未合并，squash/rebase 需要精确 repo、base、source head、merge SHA 与平台状态及 patch/结果证据。不要仅凭分支名匹配历史 PR，或把已纳入目标等同可删除。
+- 历史 PR/MR 已合并时分别核对当前 head：等于已纳入 source head可复用该证据；source head 是当前 head 的祖先时，检查其后的新 delta；发生其他漂移时标明未知。再查 dirty/ignored 内容与活跃 owner，原 PR 已合并不能覆盖后续成果。只有精确匹配且有未纳入目标证据的开放 PR/MR 才标为尚未合并；证据不足不猜测。
+
+恢复原任务时，原任务/附件 metadata 应将 repo、PR/MR、base/head SHA、branch/worktree 路径和 owner 绑定。明确接管且 owner 已释放后，才能把其现场纳入本任务；发现新 delta、混合 WIP 或来源不明时保留并列明，不把全仓报告当作全仓删除授权。
+
+| 项目 | 进入本任务清单的证据 | 删除前要求 |
 |---|---|---|
-| 交付 | 属于当前请求且通过 diff/测试检查 | stage、commit |
-| 明确活跃 | 对应当前任务、开放 issue/PR/MR、用户指令或 live owner | 保留并报告归属 |
-| AI 残留 | 有 AI 创建证据，且已交付、废弃、重复或过期 | 按指纹直接删除 |
-| Ignored 本地环境 | 被 `.gitignore` 覆盖的构建产物、缓存、依赖或本地配置 | 原地保留；仅在用户明确点名路径要求删除时处理 |
-| 用户/未知 | 用户创建，或没有充分的 AI 所有权证据 | 原地保留并报告，不读取敏感内容 |
-| 阻塞 | 权限、工具或并发变化使删除无法完成 | 修复阻塞后继续，不改成保留 |
+| 本地分支 | 本次创建或明确接管 | 非目标分支，内容已交付/等价或有明确废弃授权，SHA 未变 |
+| stash | 本次创建或明确接管，记录完整 SHA | 内容已交付/无用途或有明确废弃授权，当前 selector 仍匹配该 SHA |
+| 额外 worktree | 本次创建或明确接管 | 无活跃 owner，全部内容可删除，HEAD 和状态指纹未变 |
+| 临时路径 | 操作记录证明本任务创建且应移除 | 用途结束，内容可删除，路径指纹未变 |
 
-删除需要两份独立结论：它由 AI 创建，并且已经不活跃。名称、时间、dirty 状态或无法映射到任务都不能单独证明所有权。
+已在清单中的资源发现独有内容或活跃 owner 时保留并报告未完成，不能删清单项来绕过验收。只有全仓清理授权才将盘点的全部现场作为待处置范围。
 
-## 3. 提交闸门
+## 2. 每组交付检查
 
-- staged 文件全部属于当前任务。
-- 不重写已确认属于其他活跃任务的 index/hunk。
-- 没有意外凭据、私钥、数据库转储或大文件。
-- 已遵循仓库 commit message 规范。
-- 已运行与改动匹配的测试；未运行项会被报告。
+- staged 文件/hunk 只属于当前组；无未知内容、其他任务改动、secret 或意外大文件。
+- 已按仓库约定提交，并完成风险匹配的实际验证；记录明确未运行的检查。
+- 接力上下文含仓库、目标分支、已验证 base SHA、head 分支、精确 head SHA、评审范围和测试结果。
+- 普通 push 后验证远端 SHA；PR/MR 与仓库/head/base/SHA 匹配，描述符合真实 diff。
+- 调用 `$merge-pr` 的“交付合并”模式，显式传递接力上下文及符合安全条件的同仓库远端 head 清理授权。
+- 平台 required checks、review、冲突、branch protection、merge queue 和原子合并闸门均由 `$merge-pr` 核对；上下文仍有效时不重复本地评审/测试。
+- 确认平台合并状态、最终 merge SHA 和远端 head 处置；在安全 checkout 中 fast-forward-only 同步目标。多个组从最新目标依次交付，全部完成后再最终清理。
 
-提交当前任务后再开始收口，避免把交付内容当作残留清掉。
+## 3. 删除命令与顺序
 
-记录交付合并上下文：
+以下命令有删除副作用。只有完成主文件的范围、所有权及可删除判断后才能调用；helper 的指纹比较本身不证明这些事实。
 
-- 仓库标识、目标分支和已验证 base SHA。
-- head 分支、提交后的精确 head SHA 和已评审 diff 范围。
-- 实际运行的测试命令、结果，以及明确未运行的检查。
-- 当前 `$commit` 流程已完成 diff、需求、正确性和风险检查的声明。
+已合并的依据是平台状态、精确 head/merge SHA 与目标分支可达性；squash/rebase 后不能只靠 `git branch --merged`。另行核对分支新增提交、staged/unstaged/untracked 与需保留的 ignored 内容；历史 PR 已合并不证明当前 worktree 的全部内容已交付。
 
-## 4. 远端交付闸门
+### App-managed worktree
 
-- 当前分支不是目标分支，并且只包含当前任务交付；若提交前位于目标分支，先创建任务分支。
-- remote URL、托管平台、认证身份和 push 权限已确认；只用普通 push，并核对远端 head SHA。
-- 复用的开放 PR/MR 必须与当前仓库、head、base 和预期 SHA 匹配；否则创建新的请求。
-- PR/MR 标题、正文和验证信息足以评审，且没有夹带其他任务 commit。
-- 所有默认 `$commit` 创建或复用的 PR/MR，都立即执行 `$merge-pr` 的“交付合并”模式，传入 URL 和交付合并上下文；不得先结束当前任务。
-- `$merge-pr` 不评审 diff、不运行本地测试，只核对凭证并检查必需 CI/review、冲突、branch protection、merge queue 和仓库合并策略。
-- head/base 漂移、冲突解决或平台重跑检查时，`$merge-pr` 仍按交付合并处理，不补做代码审核或本地测试。
-- 只创建 PR/MR 或只返回链接不算交付完成。
-- 只有全部闸门通过才合并；调用默认 `$commit` 已授权本次合并，但不授权绕过平台规则。
-- 合并后确认 PR/MR 状态、目标分支和最终 merge SHA。失败时保留可恢复现场并报告准确停点，不直接推送目标分支。
+用 `list_artifacts` 确认本任务附件 identity、路径和管理归属，再用 `archive_worktree` 的 exact identity 归档；不以 `git worktree remove` 或直接删目录代替官方生命周期。先释放活跃 owner，复核 HEAD/状态并保存需要保留的 ignored 文件：官方归档的快照不包含普通 ignored 内容。归档只处理本地现场，分支与远端交付仍须分别核对。
 
-## 5. 确定性删除
+工具拒绝 primary、pinned、shared、存在 submodule/embedded repo 或不可用时，保留现场并报告具体清理阻塞，不绕过工具。成功后重查 artifacts、Git 注册和磁盘路径，报告 `已归档，checkout 已移除`；可恢复快照不代表已合并，也不要求删除它来伪造零残留。验收仍使用原路径，不能因已经提交归档请求就从 manifest 移除该项。
 
-以下命令只用于已经分类为 `AI 残留` 的候选项。helper 的 inspect 输出包含 branch/stash SHA 和 worktree 状态指纹；每次删除都传回预期值，防止盘点后其他进程修改现场。
-
-删除本地分支：
+### 普通 Git 现场
 
 ```bash
-python3 scripts/git_cleanup.py delete-branch <branch> --repo <repo> --expect-sha <sha> --protect <target>
-```
-
-删除 stash：先按 selector 数字倒序处理，每次使用最新 inspect 核对 SHA。
-
-```bash
-python3 scripts/git_cleanup.py drop-stash 'stash@{n}' --repo <repo> --expect-sha <sha>
-```
-
-删除额外 worktree，包括 dirty 或中断现场：
-
-```bash
+# 先移除本任务额外 worktree，再删分支
 python3 scripts/git_cleanup.py remove-worktree <path> --repo <repo> --expect-head <sha> --expect-status <fingerprint>
+python3 scripts/git_cleanup.py delete-branch <branch> --repo <repo> --expect-sha <sha> --protect <target>
+
+# helper 仅支持唯一 stash entry；多 entry 不删除，先完整审计并报告限制
+python3 scripts/git_cleanup.py drop-stash 'stash@{0}' --repo <repo> --expect-sha <sha>
+
+# 路径必须在仓库内，或是 helper 可发现的仓库命名系统临时路径
+python3 scripts/git_cleanup.py fingerprint-path <path> --repo <repo>
+python3 scripts/git_cleanup.py delete-path <path> --repo <repo> --expect-fingerprint <fingerprint>
 ```
 
-锁定但确认不活跃的 worktree 增加 `--unlock`。helper 禁止删除主 worktree。
+`delete-branch` 拒绝已检出的分支，并用 Git 原生 expected-old ref 事务绑定删除 SHA；分支配置不属于该事务，helper 不自动删除，避免误删随后重建同名分支的新 upstream。`drop-stash` 仅支持已验证的 files ref backend 中唯一的 `stash@{0}`：使用 Git 原生 prepare/commit 事务持锁复核 SHA 与完整 reflog，再由 Git 删除。多 entry 缺少原生 expected-entry 删除接口，因此拒绝；reftable、锁冲突、异常 reflog 或状态漂移也拒绝，不手写 refs/reflog 或回退到无 SHA 约束的 `git stash drop`。失败后重新读取现场，不依据此前 selector 重试或宣称删除已完成。
 
-清空 AI 所有且需要保留的 worktree 中已确认无用途的 tracked 改动和未忽略 untracked 内容：
+全 worktree 重置仅限已独占、全部内容可删除的范围内 worktree；共享主 checkout 或混合 WIP 禁用：
 
 ```bash
 python3 scripts/git_cleanup.py clean-worktree <path> --repo <repo> --expect-head <sha> --expect-status <fingerprint>
 ```
 
-该命令使用 `git clean -ffd`，必须保留所有 ignored 内容，不得增加 `-x`。存在无用的 merge/rebase/cherry-pick/revert/bisect 状态时增加 `--abort-operation`。其他需要保留的未忽略路径可用重复的 `--exclude <pattern>` 排除；用户内容或归属不明内容不得传给清理命令。
+该命令执行 `reset --hard` 和清除未忽略内容。存在 Git 进行中状态时默认拒绝；只有明确确认中止属于授权范围才加 `--abort-operation`。移除 locked worktree 同理，确认锁的 owner 已释放后才用 `--unlock`。任何 SHA/状态变化均需重新盘点和判断，不升级为无条件删除。
 
-删除单独临时路径：
+`git fetch --prune` 可移除陈旧 remote-tracking refs，真实远端分支按 `$merge-pr` 规则处理；helper 不处理远端交付。
 
-```bash
-python3 scripts/git_cleanup.py fingerprint-path <path> --repo <repo>
-python3 scripts/git_cleanup.py delete-path <path> --repo <repo> --expect-fingerprint <fingerprint>
+## 4. 只读任务范围验收
+
+在清理前根据任务记录创建 JSON manifest；将其保存在不会随本任务资源删除的审计位置，`--repo` 使用清理后仍存在的主 checkout；验收后作为结果记录。以下为格式示例，必须替换成真实资源，不得用示例值制造成功：
+
+```json
+{
+  "version": 1,
+  "repo": "/absolute/repo",
+  "task": "当前任务标识",
+  "branches": ["codex/example"],
+  "stash_shas": [],
+  "worktrees": ["/absolute/task-worktree"],
+  "temp_paths": ["/absolute/repo/.codex/tmp/task-artifact"]
+}
 ```
 
-helper 不创建 bundle、patch、recovery ref、archive 或 quarantine。
-
-## 6. 删除顺序与并发
-
-以下顺序只处理已分类为 `AI 残留` 的候选项：
-
-1. 非目标 worktree。
-2. 不活跃本地分支。
-3. 不活跃 stash，selector 倒序。
-4. AI 所有 worktree 中已确认无用途的 tracked 改动和未忽略残留；保留 ignored 本地环境。
-5. `git fetch --prune` 清理 remote-tracking refs。
-
-任何 SHA、HEAD 或状态指纹不匹配都表示现场已变化。重新 inspect、重新分类，然后继续；不要跳过 CAS 检查。
-
-## 7. 最终验收
+- 七个字段全部必填；未知字段、重复键/项、错误类型和缺失字段均拒绝。
+- `repo` 必须是匹配 `--repo` 的绝对路径；`task` 必须非空。`branches` 使用本地分支名，不使用完整 ref；`stash_shas` 使用完整小写 SHA，不使用会漂移的 selector。
+- `worktrees`、`temp_paths` 使用规范化绝对路径，不含 `..`，不指向仓库或文件系统根；worktree 同时检查磁盘路径和 Git 注册记录，悬空 symlink 也算残留。
+- 四个资源列表全部为空时默认拒绝。若任务确实没有待移除资源，可显式增加非空 `empty_scope_reason`；结果显示零资源验证和该理由，不能用来证明实际资源已清理。有资源时禁止该字段。
+- 本命令不检查共享主 checkout 的其他 WIP、其他分支/stash/worktree，不删除任何内容。遗漏清单项无法被它发现，清单完整性必须通过任务记录与最终盘点核对。
 
 ```bash
-python3 scripts/git_cleanup.py inspect --repo <repo>
-git -C <repo> status --short --branch
-git -C <repo> stash list
-git -C <repo> worktree list --porcelain
-git -C <repo> branch -vv
+python3 scripts/git_cleanup.py verify-task-closeout --repo <repo> --manifest <scope.json>
 ```
 
-验收标准：默认模式下当前交付已通过 PR/MR 合并到目标分支，平台状态和最终 merge SHA 已确认；当前任务没有 Git 残留；ignored 本地环境保持原样；保留的 AI 现场都有活跃任务；用户或归属不明现场保持原样并已报告；不存在本流程创建的归档或恢复副本。仅提交模式或远端阻塞必须明确报告未完成项。
+通过时退出码 `0`，输出 `verified: true`、`mode: task`、各资源计数及明确的证明边界；清单无效或仍有资源退出码 `2`。它只证明 manifest 所列资源不存在，不证明清单完整、task diff 已交付、远端交付或全仓干净。结合第 2 节的远端证据与任务 diff 验证才能报告本任务完成。
+
+## 5. 明确全仓清理时的额外验收
+
+```bash
+python3 scripts/git_cleanup.py verify-closeout --repo <repo> --target <target>
+```
+
+此命令保持原有全仓契约：仅目标本地分支和主 worktree，当前位于目标分支，stash/进行中状态/tracked 改动/未忽略内容均为空，自动发现的任务临时候选为空。普通 ignored 环境保留。它不验证远端合并或目标同步，需另用 Git/平台证据确认。
+
+全仓 verifier 失败不能换成任务 verifier 后宣告全仓完成；默认任务 verifier 通过也不能被描述为全仓清零。其他活跃任务导致全仓不能安全清理时，报告全仓未完成并保留其现场。
