@@ -26,8 +26,8 @@
 - 流式响应、数据库 cursor 和 request body 要有大小、并发和超时边界；RAII 会释放资源，但不能替代对 task、stream 和连接生命周期的主动关闭。
 - 外部整数和长度转换使用 checked/`TryFrom` 路径，避免 `as` 截断、符号转换和无界分配。
 
-## 验证
+## 验证需求
 
-- 执行项目已有 `cargo fmt --check`、`cargo check`、`cargo clippy` 和 `cargo test`；使用与部署一致的 feature/target，不盲跑互斥的 all-features。
+- 按变更范围选择项目已有 `cargo fmt --check`、`cargo check`、`cargo clippy` 或定向 `cargo test`；使用与部署一致的 feature/target，不混用互斥的 all-features。
 - 覆盖 `Option`/NULL、serde 兼容、错误 source/API 映射、task 取消/Join、阻塞隔离和事务回滚。
-- 涉及并发、unsafe 或复杂 async 时沿用项目已有 loom、Miri、sanitizer 或集成测试；没有对应工具时明确未验证风险。
+- 涉及并发、unsafe 或复杂 async 时，沿用项目已有 loom、Miri、sanitizer 或集成测试；没有对应工具时明确未验证风险。

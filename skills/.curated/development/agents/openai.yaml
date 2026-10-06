@@ -1,4 +1,4 @@
 interface:
   display_name: "统一开发"
-  short_description: "统一处理前端、后端与跨层契约开发，并按业务风险完成充分验证"
-  default_prompt: "使用 $development 统一处理当前开发任务，按改动范围读取匹配的前端、后端、跨层契约和语言 reference，保持兼容、同步必要文档并完成风险验证。"
+  short_description: "按目标自主开发与验证，复用开发现场，明确合并及清理状态，遵守明确限制"
+  default_prompt: "使用 $development 按目标与既定契约实现并验证，继续已授权流程；优先复用开发现场，收尾说明合并与清理状态，保留未交付成果并遵守明确限制。"

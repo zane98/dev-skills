@@ -23,11 +23,17 @@
 
 - 将 `sql.ErrNoRows` 或 ORM not found 与真实数据库故障分开分类，调用方不得把“没找到”解引用成 panic 或误报 500。
 - nullable 列使用 `sql.Null*`、指针或项目统一 nullable 类型，明确 NULL、零值和未提供字段的区别。
+- 修改含 nullable 列的持久化 model 前，沿 DDL → Go 字段 → 查询结果 → 写 SQL 检查一次完整往返；非指针标量会把数据库 NULL 读成零值，随后全量 `Save` 可能把 NULL 改写成 `""`、`0` 或零时间。查到完整行不代表全量保存安全。
 - raw SQL 保证列/alias 与 `Scan` 目标顺序和类型一致，检查 `rows.Err()`；ORM 查询检查 tag、preload/join 和部分字段选择。
-- 对部分加载的 ORM model 使用显式字段更新，避免 `Save` 把未加载字段的零值写回数据库。
+- 状态流转和局部修改优先用项目已有的显式字段更新、`Select` / `Updates` 或领域专用 repository 方法；部分加载 model、nullable 列映射为零值的 model 都不得直接全量 `Save`。需要兼容旧模型时，只在明确列上 `Omit` 或保留 NULL，不能全局忽略零值，因为空字符串或 0 可能是合法业务值。
 - 沿用项目 transaction helper；直接使用 `database/sql` 时，事务内始终使用 `tx`，延迟 rollback 并检查 commit error，禁止混入全局 `db` 句柄。
 - 避免 `:=` 意外遮蔽 `err`，特别是事务、defer 和 handler 分支；每个会影响提交、响应或重试的 error 都必须处理。
 - 同一事务内复用已加载实体；只有锁、隔离、数据库生成值或并发正确性要求时才重新查询。
+
+## JSON 与 ORM 往返
+
+- 先定义字段是否允许缺失、SQL NULL 或 JSON 字面量 null。契约要求 Go nil 作为合法 JSON 值写入 NOT NULL JSON/JSONB 时，通过 Valuer/serializer 保留 JSON null 并回读为 nil；nullable 列的 SQL NULL、显式空对象/数组和省略列 DEFAULT 分别处理，不用全局默认值吞并语义。
+- 核对 Create、Save、Updates、批量、upsert 和 RETURNING 的实际 SQL 与对象回写。使用目标数据库/driver 断言存储值及 Go 回读，覆盖 JSON null 与 SQL NULL、显式空值和混合批次；只有“写入没报错”或 SQLite/mock 结果不能证明这些语义。
 
 ## 错误链
 
@@ -36,9 +42,10 @@
 - 用项目统一的 typed/sentinel domain error 表达 not found、conflict、validation 和 permission；handler 只做稳定映射。
 - 返回前检查 typed-nil error、被吞掉的 error 和错误分支中的错误变量遮蔽，防止“真实失败变成功”或“业务错误变 500”。
 
-## 验证
+## 验证需求
 
 - 覆盖 nil、typed-nil、零值、NULL、not found、映射失败、领域错误和未知错误的 status/code/message。
+- nullable 列相关回归必须直接断言存储语义，例如用 `sql.Null*`、`IS NULL` 或等价 driver 能力验证修改前后仍为 NULL；只断言 Go 字段等于零值无法区分 NULL 与空值。外键、check 或 NULL 行为依赖 PostgreSQL 时，使用真实 PostgreSQL schema/driver 验证关键路径。
 - 覆盖 context 取消/超时、资源释放、goroutine 正常退出和错误回传；项目已有泄漏检查工具时沿用。
-- 执行项目已有 `go test`、`go vet`/`staticcheck`；并发、锁或共享状态变化时执行适用的 race 检查。
+- 按变更范围选择项目已有定向 `go test`、`go vet`/`staticcheck`；并发、锁或共享状态变化时执行适用的 race 检查。
 - 数据映射和查询行为使用真实 driver/schema 的集成测试，并按风险断言查询次数，避免只靠 mock 自我感动。
