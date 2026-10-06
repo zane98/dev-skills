@@ -27,7 +27,17 @@
 - 处理 `SaveChangesAsync`、commit 和并发冲突异常；执行策略重试必须配合幂等，不能把事务中的外部副作用自动重放。
 - EF migration、provider 特性和 SQL 映射使用真实数据库做集成验证；InMemory provider 不能证明事务、约束、NULL 和查询翻译正确。
 
-## 验证
+## 本地开发、Watch 与 Hot Reload
 
-- 执行项目已有 `dotnet format`/analyzer、`dotnet build` 和 `dotnet test`；保留 nullable、async 和资源生命周期相关 warning。
+- 本节用于已授权的本地启动或联调；先确认项目标准命令与目标服务。
+- 本地联调沿用仓库记录的 dev 命令；没有项目约定时使用 `dotnet watch --project <startup-project> run`。在一次已授权的修改与 smoke 循环中复用同一 watch 进程，不为每次改动重复启动服务；交付时说明访问地址以及进程已保留还是关闭。
+- 等待 watch 明确报告 Hot Reload 已应用或进程已重启后再验证。Hot Reload 成功只证明新代码已加载，不能代替受影响 API、页面、后台任务或持久化回读的定向 smoke。
+- 修改项目文件、包或项目引用、启动配置、环境变量、生成代码、静态初始化或 singleton 状态时，不依赖旧进程中的 Hot Reload 状态；按 watch 提示重启，最终验证前无法确认状态已刷新则主动重启。
+- 不并行运行会写入同一 `bin`/`obj` 的 watch、build、test 或 publish；正式构建前停止对应 watch 或使用项目已有的隔离输出方案，构建后重新启动目标开发产物并复验关键路径。
+- 多 worktree 或多 agent 并行联调时，各自使用对应工作树的 watch 进程和无冲突端口；不得复用指向另一工作树输出的进程，也不得为解决端口冲突终止未确认归属的服务。
+- 只在容器 bind mount、网络文件系统或确认原生文件监听漏报时启用 `DOTNET_USE_POLLING_FILE_WATCHER=1`，并留意额外 I/O；容器化开发沿用仓库现有 Compose/devcontainer 入口，不临时制造第二套启动路径。
+
+## 验证需求
+
+- 按变更范围选择项目已有 `dotnet format`/analyzer、`dotnet build` 或定向 `dotnet test`；保留 nullable、async 和资源生命周期相关 warning。
 - 覆盖 null/default、异常到 status/code 的映射、取消传播、DI scope、`DbContext` 并发保护、查询次数和事务失败。

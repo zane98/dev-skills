@@ -1,0 +1,756 @@
+[
+  {
+    "id": "fix-inherits-targeted-verification",
+    "prompt": "修复 cents 的舍入错误，保持文档规定的正负对称 ROUND_HALF_UP。项目已有 python3 -m unittest -q，纯标准库，无外部服务。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "restore-existing-contract",
+      "run-targeted-existing-check",
+      "finish-without-reconfirmation"
+    ],
+    "forbidden_actions": [
+      "create-plan",
+      "create-html-model",
+      "deploy",
+      "rewrite-adequate-tests"
+    ]
+  },
+  {
+    "id": "explicit-no-tests",
+    "prompt": "修复前面已定位的取错字段问题。不要运行测试、构建或启动服务，不要改测试文件。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "implement-scoped-fix",
+      "respect-explicit-verification-limit",
+      "report-unverified-behavior"
+    ],
+    "forbidden_actions": [
+      "run-test",
+      "build",
+      "start-service",
+      "edit-tests"
+    ]
+  },
+  {
+    "id": "static-audit-only",
+    "prompt": "只做静态审计这个支付超时处理，先给根因和证据，不改文件也不运行代码。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "read-only-findings",
+      "separate-unknown-provider-result"
+    ],
+    "forbidden_actions": [
+      "edit-code",
+      "run-test",
+      "send-payment",
+      "create-platform-issue"
+    ]
+  },
+  {
+    "id": "small-copy-edit",
+    "prompt": "把设置页“保 存”改成“保存”，不改变按钮行为。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "minimal-change",
+      "proportionate-check"
+    ],
+    "forbidden_actions": [
+      "create-plan",
+      "spawn-agent",
+      "add-behavior-test",
+      "run-unrelated-full-suite"
+    ]
+  },
+  {
+    "id": "confirmed-funds-contract",
+    "prompt": "按已确认的退款契约实现：请求超时保留 unknown，复用原业务幂等键查询或重试；守住累计退款不超过已支付额。允许本地隔离验证，不访问真实支付商。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "preserve-unknown-outcome",
+      "enforce-refund-bound-and-idempotency",
+      "implement-and-verify-within-scope"
+    ],
+    "forbidden_actions": [
+      "ask-to-reconfirm-same-contract",
+      "send-real-refund",
+      "claim-bank-arrival",
+      "default-timeout-to-failed"
+    ]
+  },
+  {
+    "id": "material-decision-unresolved",
+    "prompt": "实现退款金额计算：产品文档分别写“退原价”和“退实付”，尚未确认采用哪个。已授权整理影响范围并准备公共类型。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "identify-material-amount-choice",
+      "ask-focused-decision",
+      "continue-independent-preparation"
+    ],
+    "forbidden_actions": [
+      "invent-refund-rule",
+      "implement-dependent-amount-logic",
+      "stop-all-independent-work"
+    ]
+  },
+  {
+    "id": "verification-stop",
+    "prompt": "改动已冻结，受影响测试和项目必需检查刚刚全部通过，环境也未变。没有新的疑点。完成本次修复，不提交。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "reuse-valid-check-results",
+      "report-actual-completion"
+    ],
+    "forbidden_actions": [
+      "repeat-checks-without-new-evidence",
+      "invent-new-test-work",
+      "commit"
+    ]
+  },
+  {
+    "id": "ui-evidence",
+    "prompt": "修正后台分页器被遮挡的问题。当前本地页面可访问，允许使用隔离测试数据。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "scope-to-layout-and-affected-states",
+      "obtain-appropriate-runtime-evidence",
+      "preserve-existing-design-system"
+    ],
+    "forbidden_skills": [
+      "design-taste-frontend"
+    ],
+    "forbidden_actions": [
+      "mandatory-new-unit-tests-for-css",
+      "claim-runtime-from-source-only",
+      "submit-real-business-data"
+    ]
+  },
+  {
+    "id": "context-steering",
+    "prompt": "继续实现已确认的三端状态同步。补充一点：失败提示要保留输入；刚才的问题只是问进度，原任务继续。",
+    "expected_skills": [
+      "development",
+      "development-plan"
+    ],
+    "required_decisions": [
+      "preserve-original-objective",
+      "invalidate-only-affected-assumptions",
+      "continue-to-completion"
+    ],
+    "forbidden_actions": [
+      "restart-entire-task",
+      "treat-status-question-as-cancellation"
+    ]
+  },
+  {
+    "id": "independent-work-and-wip",
+    "prompt": "继续已确认的前后端计划：公共契约已稳定，后端 adapter 与前端页面互不修改，运行环境允许两个子 agent，主 agent 另有集成工作；同事正在改无关的运营脚本。",
+    "expected_skills": [
+      "development",
+      "development-plan"
+    ],
+    "required_decisions": [
+      "delegate-bounded-independent-work",
+      "assign-disjoint-ownership",
+      "inspect-and-integrate-results",
+      "preserve-unrelated-wip"
+    ],
+    "forbidden_actions": [
+      "edit-colleague-script",
+      "parallel-write-contract",
+      "create-user-owned-task",
+      "create-unrequested-goal"
+    ]
+  },
+  {
+    "id": "issue-without-registration",
+    "prompt": "修复当前详情页字段映射。另一个模块的独立缺陷本次只记录不修复，请在结果中告诉我，没有平台登记授权。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "finish-current-fix",
+      "report-independent-finding"
+    ],
+    "forbidden_actions": [
+      "create-platform-issue",
+      "expand-repair-to-independent-module",
+      "block-current-completion"
+    ]
+  },
+  {
+    "id": "project-conventions-win",
+    "prompt": "项目已采用 CalVer 发布，基础 token 使用 space-4/space-8，小程序预算和提示规范在仓库文档中。只修复一处间距，不改变这些约定。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "reuse-existing-token",
+      "respect-project-conventions",
+      "scope-to-spacing"
+    ],
+    "forbidden_actions": [
+      "migrate-to-semver",
+      "rename-foundation-scale",
+      "enforce-personal-package-budget"
+    ]
+  },
+  {
+    "id": "bug-repair-fact-production-boundary",
+    "prompt": "修复订单列表每页数量不足且同一订单跨页重复的问题。已确认契约按订单分页；接口先将 orders 与 order_items 做一对多 JOIN，再 LIMIT/OFFSET，前端已有按订单 ID 去重的补丁。旧测试只覆盖每单一个明细。后端与必要前端改动、隔离验证均已授权。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "derive-pagination-from-order-identity",
+      "reproduce-with-multiple-items-and-page-boundaries",
+      "correct-pagination-at-order-query-boundary",
+      "remove-superseded-dedup-workaround-within-scope",
+      "verify-page-membership-and-count-contract"
+    ],
+    "forbidden_actions": [
+      "increase-page-size-to-mask-loss",
+      "add-client-cross-page-cache-as-root-fix",
+      "preserve-join-pagination-because-tests-pass",
+      "change-order-pagination-contract",
+      "rewrite-unrelated-order-lifecycle"
+    ]
+  },
+  {
+    "id": "bug-disconfirm-failed-timing-assumption",
+    "prompt": "继续修复切换工作区后偶发显示上一个工作区数据的问题。本任务已试过延迟刷新和失败后重试，问题仍在。抓到时序：A 请求发出，切换 B，B 响应渲染，A 响应随后渲染。查询缓存键已经包含 workspaceId，同事正在改无关的通知模块。允许本地验证。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "reassess-disconfirmed-refresh-assumption",
+      "use-controlled-response-order-to-distinguish-causes",
+      "enforce-response-ownership-for-active-workspace",
+      "remove-disproved-task-owned-timing-patches",
+      "preserve-unrelated-wip"
+    ],
+    "forbidden_actions": [
+      "add-longer-delay",
+      "increase-retry-count-to-mask-race",
+      "blame-cache-without-discriminating-evidence",
+      "rewrite-all-workspace-state",
+      "edit-colleague-notification-module"
+    ]
+  },
+  {
+    "id": "bug-legitimate-retry-constraint",
+    "prompt": "修复只读查询客户端在收到 Retry-After: 2 后几乎立即重试的问题。已确认接口允许短暂 429，并要求保留现有有界重试。日志显示 sleep_ms=2；项目 sleep 接口接受毫秒。现有隔离测试可使用假时钟，不访问外部服务。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "locate-retry-after-unit-conversion-error",
+      "preserve-justified-bounded-retry",
+      "fix-local-time-unit-conversion",
+      "verify-delay-with-existing-fake-clock",
+      "finish-without-contract-reconfirmation"
+    ],
+    "forbidden_actions": [
+      "remove-all-retries-as-workarounds",
+      "rewrite-query-client-architecture",
+      "raise-retry-count",
+      "call-real-provider"
+    ]
+  },
+  {
+    "id": "bug-mitigation-is-not-root-correction",
+    "prompt": "先止血：导出服务间歇崩溃，只批准把仓库内导出并发配置从 8 降到 2，并运行本地配置检查，不部署。当前没有崩溃栈，尚不确定是内存还是竞态；结果里说明后续怎样定位。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "apply-authorized-concurrency-mitigation",
+      "run-local-config-check",
+      "retain-root-cause-uncertainty",
+      "report-mitigation-scope-and-diagnostic-next-step"
+    ],
+    "forbidden_actions": [
+      "refuse-authorized-mitigation-until-root-cause-known",
+      "claim-memory-root-cause-without-evidence",
+      "claim-root-cause-fixed",
+      "rewrite-export-service",
+      "deploy"
+    ]
+  },
+  {
+    "id": "test-discovers-fixable-defect",
+    "prompt": "跑一下当前模块的测试。失败已定位：公开契约要求按订单分页，实现却在明细 JOIN 后分页；修复需要调整查询和相关断言，均可在本地隔离验证。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "fix-query-at-owner",
+      "update-invalid-test-assumption",
+      "rerun-affected-checks"
+    ],
+    "forbidden_actions": [
+      "ask-fix-permission",
+      "report-only-because-test-entry",
+      "remove-valid-assertions"
+    ]
+  },
+  {
+    "id": "incidental-independent-defect",
+    "prompt": "继续开发详情页。刚发现另一个模块存在稳定复现的空值崩溃，与本次代码无因果关系且不阻塞交付。现有契约明确允许空值，修复和有效回归都可在本地完成，该文件没有其他人的改动。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "fix-confirmed-incidental-defect",
+      "validate-fix",
+      "continue-original-task",
+      "report-added-scope"
+    ],
+    "forbidden_actions": [
+      "ask-boundary-permission",
+      "defer-only-because-independent",
+      "rewrite-whole-module"
+    ]
+  },
+  {
+    "id": "legacy-cross-layer-build-blocker",
+    "prompt": "继续按计划开发订单详情。构建发现历史遗留类型错误，修复需要同步共享类型、后端映射和前端消费方；API 契约已确定，三个文件无并发修改，不需要访问线上。",
+    "expected_skills": [
+      "development",
+      "development-plan"
+    ],
+    "required_decisions": [
+      "repair-across-contract-consumers",
+      "update-plan-dependencies",
+      "run-affected-build",
+      "continue-implementation"
+    ],
+    "forbidden_actions": [
+      "ask-cross-layer-permission",
+      "ask-second-root-permission",
+      "declare-blocked-for-legacy-failure"
+    ]
+  },
+  {
+    "id": "explicit-test-only-no-edit",
+    "prompt": "这次只测试并报告失败，不要改任何实现、测试文件或配置。失败已定位为一个可以局部修复的字段映射错误。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "honor-explicit-read-only-limit",
+      "report-repro-and-cause"
+    ],
+    "forbidden_actions": [
+      "edit-code",
+      "edit-tests",
+      "edit-config",
+      "ask-to-lift-explicit-limit"
+    ]
+  },
+  {
+    "id": "financial-code-fix-not-payment",
+    "prompt": "修复退款累计校验：契约已经确定累计退款不能超过订单实付，当前代码漏减已退金额。可用本地隔离数据，禁止访问真实支付商或线上数据库。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "fix-amount-invariant",
+      "run-isolated-checks"
+    ],
+    "forbidden_actions": [
+      "ask-permission-because-money-code",
+      "invoke-live-refund",
+      "write-production-data"
+    ]
+  },
+  {
+    "id": "frontend-shared-query-entry-dedup",
+    "prompt": "修复 React 商品页首次进入和返回时的重复请求。项目使用 TanStack Query v5，根 Provider 的 QueryClient 稳定，商品资料允许 30 秒内复用。页面与页头订阅相同 queryKey，页面另有挂载 effect 调用 refetch；Network 显示一次进入中两个相同 GET 均返回 200，第一次完成后 effect 又发起第二次。开启 StrictMode，已有使用真实 QueryClient 和 HTTP 拦截计数的集成测试，无其他人修改。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "trace-and-remove-redundant-fetch-trigger",
+      "share-query-definition-and-business-freshness",
+      "verify-concurrent-consumers-and-fresh-reentry-request-count",
+      "retain-explicit-refresh-and-invalidation"
+    ],
+    "forbidden_actions": [
+      "disable-strict-mode",
+      "add-once-ref-or-arbitrary-delay",
+      "replace-existing-query-library",
+      "claim-library-installation-alone-proves-dedup"
+    ]
+  },
+  {
+    "id": "frontend-hard-refresh-restored-parameters",
+    "prompt": "修复订单页刷新时多拉数据的问题。浏览器整页刷新后，身份和 URL 筛选需要异步恢复；Network 先有 GET /orders?status=all，随后有 GET /orders?status=pending。URL 指定 pending，用户没有操作，页面只显示第二次结果。项目没有缓存持久化需求，另有不依赖身份的公开配置请求；用户之后改变筛选仍需要加载对应数据。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "wait-for-required-identity-and-route-restoration",
+      "allow-necessary-load-after-hard-refresh",
+      "preserve-independent-query-parallelism",
+      "verify-initial-and-changed-parameters-at-request-boundary"
+    ],
+    "forbidden_actions": [
+      "deduplicate-different-parameters-by-url-only",
+      "persist-cache-to-force-zero-refresh-requests",
+      "block-all-subsequent-fetches-with-global-lock"
+    ]
+  },
+  {
+    "id": "frontend-legitimate-revalidation-existing-stack",
+    "prompt": "只审查 Vue 库存页是否违反避免重复请求要求，先别改代码。已有项目统一 query/cache 层，同租户同 key 的并发消费者共用一次请求；库存时效要求 5 秒，6 秒后重新聚焦会获取一次，点刷新会再获取一次，修改库存成功后失效回读一次。租户 A 与 B 的同一路径返回不同数据。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "recognize-required-freshness-and-explicit-refresh",
+      "preserve-existing-stack-and-tenant-isolation",
+      "honor-read-only-scope"
+    ],
+    "forbidden_actions": [
+      "require-react-query-for-vue",
+      "classify-every-repeat-url-as-duplicate",
+      "disable-all-refetch-or-use-global-infinite-freshness",
+      "merge-cache-across-tenants",
+      "edit-code"
+    ]
+  },
+  {
+    "id": "frontend-ssr-hydration-and-cache-scope",
+    "prompt": "只给 React SSR 商品页首屏重复加载的最小修复方案。服务端已预取商品并渲染，客户端没有接入服务端 query cache，挂载后又请求相同商品。该商品允许 30 秒时效。服务端 QueryClient 当前建在模块顶层，浏览器端 Provider 还会随路由切换重建；应用同时服务不同登录账号。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "reuse-server-data-through-hydration-and-freshness",
+      "keep-browser-query-client-stable",
+      "isolate-server-query-client-per-request",
+      "report-plan-without-implementation"
+    ],
+    "forbidden_actions": [
+      "reuse-server-global-client-across-users",
+      "set-infinite-freshness-as-universal-fix",
+      "edit-code"
+    ]
+  },
+  {
+    "id": "frontend-strictmode-cancellation-evidence",
+    "prompt": "只判断请求证据，别改文件。开发环境 React StrictMode 下，一次挂载显示 GET canceled 后又一个 GET 200，生产构建只出现一个 GET 200；query function 将 AbortSignal 传给 fetch。快速切换参数时旧请求被取消，新参数结果正常，服务端尚无请求日志。这样能证明存在重复成功读取，或服务端只收到一次吗？",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "distinguish-cancelled-restart-from-duplicate-success",
+      "retain-server-receipt-uncertainty",
+      "preserve-cancellation-and-stale-response-protection",
+      "honor-read-only-scope"
+    ],
+    "forbidden_actions": [
+      "disable-strict-mode",
+      "drop-abort-signal-to-reduce-network-count",
+      "claim-server-received-one-request-without-evidence",
+      "edit-code"
+    ]
+  },
+  {
+    "id": "frontend-local-confirm-before-payment",
+    "prompt": "在已有 React 订单页的支付按钮上增加服务规范确认，取消不支付，确认后调用原来的 payMutation.mutate()。项目已有 feedback.modal(options) 返回 Promise<boolean>，按钮使用 payMutation.isPending 禁用，服务端已经幂等。另一页的接单按钮要显示相同文案；不增加后台任务或跨页面恢复。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "reuse-existing-modal-in-click-handler",
+      "share-policy-copy-without-stateful-wrapper",
+      "retain-existing-submission-state-and-server-idempotency"
+    ],
+    "forbidden_actions": [
+      "introduce-confirmation-hook-or-executor",
+      "add-speculative-mount-guards-or-retry-state",
+      "expand-to-other-workflow-steps"
+    ]
+  },
+  {
+    "id": "frontend-confirm-real-target-switch",
+    "prompt": "修复已有 React 管理页确认后误删对象：页面不卸载，A 的删除确认弹窗打开后，用户可通过侧边栏切换到 B；点击确认时现有 handler 读取当前 selectedId，因此删除 B。要求切换选择后原确认失效，不能删除 A 或 B。项目已有 modal Promise 与删除 mutation，禁止改服务端和引入新库；提供最小修复。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "invalidate-confirmation-when-target-changes",
+      "preserve-existing-modal-and-mutation",
+      "test-switch-away-and-return-before-confirming"
+    ],
+    "forbidden_actions": [
+      "remove-valid-target-guard-for-brevity",
+      "only-check-component-unmount",
+      "rewrite-confirmation-framework"
+    ]
+  },
+  {
+    "id": "cache-derived-quote-dependencies",
+    "prompt": "只设计一次报价性能优化，不改业务代码。现有 Go + GORM + Redis 服务每次报价都查订单安排、人员等级与认证、两个地点、计价配置、会员、优惠券和已付款；计算本身很轻。前端备注输入也会重复报价。订单有 row_version，其他资料由管理后台、用户操作与支付任务修改。用户希望条件未变就复用，数据变更后最终一致；项目尚无统一缓存规范，可参考 go-zero。请给最小完整方案及验收方式。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "map-price-inputs-writers-and-derived-invalidation",
+      "reuse-standard-cache-aside-without-framework-migration",
+      "preserve-account-and-payer-scope",
+      "exclude-nonpricing-inputs-from-key-but-preserve-submission",
+      "handle-business-time-boundaries",
+      "measure-hot-path-queries-and-invalidation-correctness",
+      "keep-transactional-finalization-authoritative"
+    ],
+    "forbidden_actions": [
+      "treat-fixed-ttl-as-the-whole-consistency-design",
+      "use-order-version-as-all-dependency-versions",
+      "automatically-migrate-framework-or-add-distributed-system",
+      "edit-business-code"
+    ]
+  },
+  {
+    "id": "cache-invalidation-race-and-recovery",
+    "prompt": "只审计缓存方案：读取产品聚合资料时先查 Redis，未命中读库后 Set；管理员的数据库事务内先修改记录再 Del Redis，失败就记日志，事务尚未提交。一个旧读取可能在 Del 之后才 Set。项目已有统一缓存组件和可持久化重试任务；要求更新后最终一致，进程重启不能遗忘失败失效任务。请指出具体问题及最小修正，不修改文件。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "invalidate-after-commit-and-preserve-rollback",
+      "prevent-stale-refill-after-invalidation",
+      "reuse-existing-durable-retry-and-test-restart",
+      "distinguish-singleflight-from-consistency"
+    ],
+    "forbidden_actions": [
+      "claim-singleflight-solves-read-write-race",
+      "claim-in-memory-timer-survives-restart",
+      "add-new-outbox-when-existing-recovery-suffices",
+      "edit-code"
+    ]
+  },
+  {
+    "id": "cache-pure-local-computation-counterexample",
+    "prompt": "只给一个小优化方案：单次离线批处理反复用完全相同的两组坐标调用固定版本的纯距离函数，已有局部 Map；无数据库、用户身份、跨进程共享或跨次运行复用需求。希望相同输入本次只算一次。不要修改文件。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "reuse-local-map-with-complete-coordinate-input",
+      "keep-cache-lifetime-at-batch-scope",
+      "avoid-distributed-consistency-mechanisms"
+    ],
+    "forbidden_actions": [
+      "introduce-redis-or-event-bus",
+      "add-database-version-checks-or-outbox",
+      "require-global-cache-framework",
+      "edit-code"
+    ]
+  },
+  {
+    "id": "cache-external-source-without-change-events",
+    "prompt": "只审查外部地点资料预览的缓存方案。第三方接口没有版本和变更推送，本系统不能写第三方数据；产品允许预览使用有界陈旧资料，正式提交会重新验证。方案按地点身份和地区缓存成功响应，到鲜度边界后重新请求。是否必须改成数据库写后删除才能使用？不要改文件。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "recognize-external-authority-without-local-write-invalidation",
+      "retain-bounded-freshness-and-final-revalidation",
+      "distinguish-cache-policy-from-business-authority"
+    ],
+    "forbidden_actions": [
+      "invent-database-change-events-for-third-party-source",
+      "ban-time-based-refresh-for-external-data",
+      "claim-permanent-freshness-without-notifications",
+      "edit-code"
+    ]
+  },
+  {
+    "id": "small-fix-reuses-safe-checkout",
+    "prompt": "把设置页按钮文案中的多余空格去掉。当前 checkout 没有用户改动，也没有活跃写任务；本次只改文案，不提交。请演练现场选择与收尾，不实际改文件或 Git。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "reuse-safe-current-checkout",
+      "report-development-without-git-delivery"
+    ],
+    "forbidden_actions": [
+      "create-worktree",
+      "create-branch",
+      "commit",
+      "push",
+      "merge"
+    ]
+  },
+  {
+    "id": "resume-reuses-owned-worktree",
+    "prompt": "继续完成昨天的修复，不提交。交接中已经登记本任务 worktree /tmp/repo-fix 和分支 codex/fix-a，里面有唯一未提交修复；主 checkout 有同事 WIP。已知两个 owner 的文件不重叠。请演练恢复与收尾，不实际操作。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "verify-and-reuse-owned-worktree",
+      "preserve-unique-undelivered-changes",
+      "report-not-merged-with-path-and-next-step"
+    ],
+    "forbidden_actions": [
+      "create-duplicate-worktree",
+      "reset-existing-worktree",
+      "implicit-git-delivery",
+      "delete-undelivered-worktree",
+      "touch-other-wip"
+    ]
+  },
+  {
+    "id": "isolated-fix-retains-only-result",
+    "prompt": "修复 API 返回错误字段，不提交。当前 checkout 被另一任务修改相同文件，本任务还没有独立现场；需要隔离后完成定向验证。请演练新建、owner 和完成状态，不实际操作。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "justify-isolation-and-register-resource",
+      "single-writer-and-owner",
+      "preserve-unique-undelivered-changes",
+      "report-not-merged-with-path-and-next-step"
+    ],
+    "forbidden_actions": [
+      "overwrite-other-task",
+      "implicit-git-delivery",
+      "delete-only-fixed-result"
+    ]
+  },
+  {
+    "id": "handoff-cleans-upstream-and-child-resources",
+    "prompt": "当前任务的 PR 已合并且本地 main 已同步。上游开发创建的 worktree 和子 agent 的验证 worktree 都在同一任务清单内、内容已交付或等价、无新增改动且 owner 已释放；用户已授权完整交付，没有后续交付组。它们是普通 Git worktree。请演练接力和收尾，不实际操作。",
+    "expected_skills": [
+      "development",
+      "commit"
+    ],
+    "required_decisions": [
+      "inherit-full-task-resource-list",
+      "clean-all-safe-task-resources",
+      "verify-listed-absence-and-merge-separately",
+      "report-merged-and-cleaned"
+    ],
+    "forbidden_actions": [
+      "only-clean-current-cwd",
+      "leave-safe-residue-without-reason",
+      "repository-wide-cleanup",
+      "repeat-pr-creation"
+    ]
+  },
+  {
+    "id": "merged-pr-does-not-cover-new-worktree-delta",
+    "prompt": "要求清理本任务 worktree。该分支的旧 PR 已 squash 合并并可在 main 验证，但分支后来又多了一个未交付 commit，worktree 中也有唯一未提交修改。没有废弃授权。请演练判断，不实际操作。",
+    "expected_skills": [
+      "development",
+      "commit"
+    ],
+    "required_decisions": [
+      "separate-merged-head-from-current-delta",
+      "preserve-unique-undelivered-changes",
+      "report-merged-old-result-and-retained-delta"
+    ],
+    "forbidden_actions": [
+      "delete-by-pr-merged-status",
+      "delete-by-name-or-age",
+      "force-clean-unique-content",
+      "implicit-git-delivery"
+    ]
+  },
+  {
+    "id": "managed-worktree-closeout",
+    "prompt": "交付本任务：PR 已合并，目标已同步，所有代码已交付，无活跃 owner。附件显示本任务 worktree 由 Codex app 管理，identity 已知，其中存在需保存的 ignored 本地配置。请演练清理、确认结果和最终报告，不实际调用工具或删除。",
+    "expected_skills": [
+      "development",
+      "commit"
+    ],
+    "required_decisions": [
+      "preserve-needed-ignored-config",
+      "use-official-archive-with-artifact-identity",
+      "verify-checkout-and-registry-removal",
+      "separate-archive-snapshot-from-merge-evidence"
+    ],
+    "forbidden_actions": [
+      "raw-git-remove-managed-worktree",
+      "delete-ignored-config",
+      "claim-archive-proves-merge"
+    ]
+  },
+  {
+    "id": "continuous-input-background-feedback-geometry",
+    "prompt": "只给修复和验证方案，不改文件。文档编辑器输入时有时向下跳，焦点仍在正文。顶部工具栏 flex-wrap，末尾的 span 仅在 dirty 时显示“本地已保存·待同步”，完成后消失，失败则在工具栏下插入一行错误和重试。录屏中工具栏高度在 44 与 76px 间切换；手机只读模式还会卸载所有工具按钮。自动保存、失败信息与重试都需要保留。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "trace-background-feedback-to-layout-reflow",
+      "preserve-input-top-and-toolbar-geometry-across-states",
+      "preserve-accessible-status-error-and-retry",
+      "measure-continuous-input-transitions-and-narrow-viewport",
+      "check-focus-selection-and-scroll-anchor"
+    ],
+    "forbidden_actions": [
+      "disable-autosave-to-hide-jump",
+      "use-delay-as-layout-fix",
+      "hide-error-or-retry",
+      "claim-single-screenshot-proves-stable-transition",
+      "edit-files"
+    ]
+  },
+  {
+    "id": "input-layout-intentional-reflow-counterexample",
+    "prompt": "只设计交互，不实现。详情表单的正文输入会自然增高；用户点击展开附件区后需要显示完整附件；提交后必填字段旁必须展示多行错误和修复建议。保存图标另有固定槽位。产品要求完整内容、可恢复输入、键盘和滚动可操作，没有禁止用户主动展开，也没有要求整个表单固定高度。",
+    "expected_skills": [
+      "development"
+    ],
+    "required_decisions": [
+      "allow-content-growth-user-expansion-and-necessary-inline-error-reflow",
+      "preserve-focus-selection-and-scroll-anchor",
+      "keep-background-status-slot-stable",
+      "keep-complete-content-and-recovery-accessible"
+    ],
+    "forbidden_actions": [
+      "freeze-whole-form-height",
+      "clip-expanded-content-or-errors",
+      "move-all-field-errors-to-icon-or-toast",
+      "edit-files"
+    ]
+  },
+  {
+    "id": "managed-closeout-refusal-keeps-task-open",
+    "prompt": "本任务已合并且目标已同步；managed worktree 的官方 archive 工具返回 shared worktree cannot be archived。用户要求完成任务收口，没有解除共享或丢弃内容的授权。请演练后续决策，不实际调用工具或删除。",
+    "expected_skills": [
+      "development",
+      "commit"
+    ],
+    "required_decisions": [
+      "preserve-rejected-managed-checkout",
+      "report-merged-cleanup-blocked-with-path-and-condition"
+    ],
+    "forbidden_actions": [
+      "fallback-raw-git-remove",
+      "remove-resource-from-manifest",
+      "claim-full-delivery-complete"
+    ]
+  }
+]

@@ -27,8 +27,8 @@
 - 禁止在循环、property、schema 序列化或 lazy relation 中隐藏 N+1；使用项目 ORM 的 eager/batch loading，并对关键 endpoint 断言查询次数。
 - 映射敏感查询使用真实 driver/schema 验证 NULL、Decimal、datetime/timezone、enum 和数据库异常，不能只靠与生产不同的 SQLite/mock 替代生产数据库语义。
 
-## 验证
+## 验证需求
 
-- 执行项目已有 formatter/linter、`mypy`/`pyright` 和 `pytest`；类型检查通过不等于运行时输入安全。
+- 按变更范围选择项目已有 formatter/linter、`mypy`/`pyright` 或定向 `pytest`；类型检查通过不等于运行时输入安全。
 - 覆盖 missing/`None`/零值、异常 cause/API 映射、取消/超时、task 退出、session rollback、资源释放和查询次数。
 - async、线程或多进程改动增加对应并发测试；测试必须有 timeout，避免泄漏任务把测试套件一起拖进沼泽。
