@@ -2,3 +2,5 @@ interface:
   display_name: "开发计划"
   short_description: "只跟踪开发产出与依赖，开发完成即归档"
   default_prompt: "使用 $development-plan 制定或执行复杂开发计划，只跟踪开发产出和依赖，开发完成后归档并同步入口；部署与线上验证在计划外管理。"
+policy:
+  allow_implicit_invocation: true
